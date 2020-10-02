@@ -7,7 +7,6 @@ services:
       - "gvmd"
 
   gvm-postgres:
-    # image: wajdih/gvm-postgres
     build:
       context: ./gvm-postgres
     environment:
@@ -20,7 +19,6 @@ services:
 
   gvmd:
     # CONNECTED /var/run/ospd/ospd.sock
-    # image: wajdih/gvmd
     build:
       context: ./gvmd
     environment:
@@ -34,7 +32,6 @@ services:
       - "gvm-postgres"
 
   gsad:
-    # image: wajdih/gsad
     build:
       context: ./gsad
     ports:
@@ -48,7 +45,6 @@ services:
   openvas:
     # LISTENING /var/run/ospd/ospd.sock
     # CONNECTED /var/run/redis/redis.sock
-    # image: wajdih/openvas
     build:
       context: ./openvas
     privileged: true

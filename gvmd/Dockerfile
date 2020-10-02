@@ -1,13 +1,16 @@
 FROM ubuntu:focal
-MAINTAINER Mohammad Razavi <mrazavi64@gmail.com>
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GVMD_POSTGRESQL_URI="postgresql://gvmduser:password@postgres:5432/gvmd?application_name=gvmd" \
+    GVMD_USER=admin
 
 RUN set -ex; \
     apt update; \
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends gnupg; \
+    apt install -y --no-install-recommends gnupg; \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3C453D244AA450E0; \
     echo "deb http://ppa.launchpad.net/mrazavi/gvm/ubuntu focal main" > /etc/apt/sources.list.d/mrazavi-ubuntu-gvm-focal.list; \
     apt update; \
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends gvmd-pg postgresql-client texlive-latex-base xsltproc gnutls-bin xmlstarlet zip python3 python3-lxml smbclient snmp gnupg openssh-client sshpass socat haveged rsync wget; \
+    apt install -y --no-install-recommends gvmd-pg postgresql-client texlive-latex-base xsltproc gnutls-bin xmlstarlet zip python3 python3-lxml smbclient snmp gnupg openssh-client sshpass socat haveged rsync wget; \
     sed -i 's|/var/log/gvm/gvmd.log|/dev/stdout|g' /etc/gvm/gvmd_log.conf; \
     cd /; \
     apt download openvas; \
@@ -16,14 +19,12 @@ RUN set -ex; \
     rm -rf ./openvas_*.deb; \
     rm -rf /var/lib/apt/lists/*
 
-ENV GVMD_POSTGRESQL_URI="postgresql://gvmduser:password@postgres:5432/gvmd?application_name=gvmd" \
-    GVMD_USER=admin
-
 VOLUME /var/lib/gvm/
 
-EXPOSE 9390
+EXPOSE 9390 22
 
 COPY docker-entrypoint.sh /usr/local/bin/
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["gvmd", "-f", "--listen=0.0.0.0", "--port=9390"]

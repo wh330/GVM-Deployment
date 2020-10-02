@@ -1,0 +1,46 @@
+image: docker:19.03.12
+
+services:
+    - docker:19.03.12-dind
+
+stages:
+    - build
+
+before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:gsad:
+    stage: build
+    script:
+        - cd gsad
+        - docker pull $CI_REGISTRY_IMAGE/gsad:latest || true
+        - docker build --cache-from $CI_REGISTRY_IMAGE/gsad:latest --tag $CI_REGISTRY_IMAGE/gsad:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/gsad:latest .
+        - docker push $CI_REGISTRY_IMAGE/gsad:$CI_COMMIT_SHA
+        - docker push $CI_REGISTRY_IMAGE/gsad:latest
+
+build:gvm-postgres:
+    stage: build
+    script:
+        - cd gvm-postgres
+        - docker pull $CI_REGISTRY_IMAGE/gvm-postgres:latest || true
+        - docker build --cache-from $CI_REGISTRY_IMAGE/gvm-postgres:latest --tag $CI_REGISTRY_IMAGE/gvm-postgres:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/gvm-postgres:latest .
+        - docker push $CI_REGISTRY_IMAGE/gvm-postgres:$CI_COMMIT_SHA
+        - docker push $CI_REGISTRY_IMAGE/gvm-postgres:latest
+
+build:gvmd:
+    stage: build
+    script:
+        - cd gvmd
+        - docker pull $CI_REGISTRY_IMAGE/gvmd:latest || true
+        - docker build --cache-from $CI_REGISTRY_IMAGE/gvmd:latest --tag $CI_REGISTRY_IMAGE/gvmd:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/gvmd:latest .
+        - docker push $CI_REGISTRY_IMAGE/gvmd:$CI_COMMIT_SHA
+        - docker push $CI_REGISTRY_IMAGE/gvmd:latest
+
+build:openvas:
+    stage: build
+    script:
+        - cd openvas
+        - docker pull $CI_REGISTRY_IMAGE/openvas:latest || true
+        - docker build --cache-from $CI_REGISTRY_IMAGE/openvas:latest --tag $CI_REGISTRY_IMAGE/openvas:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/openvas:latest .
+        - docker push $CI_REGISTRY_IMAGE/openvas:$CI_COMMIT_SHA
+        - docker push $CI_REGISTRY_IMAGE/openvas:latest

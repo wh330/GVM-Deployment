@@ -1,55 +1,56 @@
-version: '2.1'
-
-volumes:
-  redis-data: {}
-  openvas-var-lib: {}
-  gvm-var-lib: {}
-  postgres-data: {}
-  run-redis: {}
-  run-ospd: {}
-
+version: '3.2'
 services:
+  gmp-client:
+    image: wajdih/gmp-client
+    command: sleep 3600
+    depends_on:
+      - "gvmd"
+
   gvm-postgres:
-    image: admirito/gvm-postgres:11
+    # image: wajdih/gvm-postgres
+    build:
+      context: ./gvm-postgres
     environment:
-      PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: gvmd
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_USER: gvmduser
+      - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_DB=gvmd
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_USER=gvmduser
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
   gvmd:
     # CONNECTED /var/run/ospd/ospd.sock
-    image: admirito/gvmd:11
+    # image: wajdih/gvmd
+    build:
+      context: ./gvmd
     environment:
-      GVMD_POSTGRESQL_URI: postgresql://gvmduser:mypassword@gvm-postgres:5432/gvmd?application_name=gvmd
+    - GVMD_POSTGRESQL_URI=postgresql://gvmduser:mypassword@gvm-postgres:5432/gvmd?application_name=gvmd
     volumes:
       - openvas-var-lib:/var/lib/openvas
       - gvm-var-lib:/var/lib/gvm
       - run-redis:/var/run/redis
       - run-ospd:/var/run/ospd
     depends_on:
-      gvm-postgres:
-        condition: service_started
+      - "gvm-postgres"
 
   gsad:
-    image: admirito/gsad:11
+    # image: wajdih/gsad
+    build:
+      context: ./gsad
     ports:
       - 8080:80
-    
     environment:
-      GVMD_HOST: gvmd
-      GVMD_PORT: '9390'
-
+      - GVMD_HOST=gvmd
+      - GVMD_PORT=9390
     depends_on:
-      gvmd:
-        condition: service_started
+      - "gvmd"
 
   openvas:
     # LISTENING /var/run/ospd/ospd.sock
     # CONNECTED /var/run/redis/redis.sock
-    image: admirito/openvas:11
+    # image: wajdih/openvas
+    build:
+      context: ./openvas
     privileged: true
     sysctls:
       net.core.somaxconn: '2048'
@@ -57,10 +58,8 @@ services:
       - openvas-var-lib:/var/lib/openvas
       - run-redis:/var/run/redis
       - run-ospd:/var/run/ospd
-
     depends_on:
-      gvm-postgres:
-        condition: service_started
+      - "gvm-postgres"
 
   # It is recommended to add vm.overcommit_memory=1 into
   # /etc/systcl.conf on the host
@@ -68,13 +67,19 @@ services:
     # LISTENING /var/run/redis/redis.sock
     image: redis:5.0
     volumes:
-    - run-redis:/var/run/redis
-    - redis-data:/data
+      - run-redis:/var/run/redis
+      - redis-data:/data
     command: redis-server --port 0 --unixsocket /var/run/redis/redis.sock --unixsocketperm 755
     privileged: true
     sysctls:
       net.core.somaxconn: '2048'
-
     depends_on:
-      openvas:
-        condition: service_started
+      - "openvas"
+
+volumes:
+  redis-data:
+  openvas-var-lib:
+  gvm-var-lib:
+  postgres-data:
+  run-redis:
+  run-ospd:

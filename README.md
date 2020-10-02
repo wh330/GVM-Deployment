@@ -1,3 +1,3 @@
-# GVM-deployment
+# GVM Deployment
 
-Deployment scripts for Greenbone Vulnerability Management
+Dockerised Greenbone Vulnerability Management components.

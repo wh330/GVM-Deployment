@@ -30,4 +30,12 @@ if [ "$1" = 'ospd-openvas' ]; then
     fi
 fi
 
+# Make sure certs for ospd-openvas exist
+if [ ! -f "/usr/var/lib/gvm/private/CA/serverkey.pem" ] ||
+    [ ! -f "/usr/var/lib/gvm/CA/servercert.pem" ] ||
+    [ ! -f "/usr/var/lib/gvm/CA/cacert.pem" ]; then
+    echo "Certs don't exist. Exit"
+    exit 1
+fi
+
 exec "$@"

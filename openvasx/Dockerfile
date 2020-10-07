@@ -95,7 +95,7 @@ RUN chmod +x /tini
 RUN mkdir /var/run/ospd
 
 VOLUME /var/lib/openvas \
-       /var/run/redis 
+       /var/run/redis
 
 COPY docker-entrypoint.sh /usr/local/bin/
 

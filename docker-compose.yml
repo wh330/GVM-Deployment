@@ -57,6 +57,20 @@ services:
     depends_on:
       - "gvm-postgres"
 
+  openvasx:
+    # Additional openvas instance listening on TCP
+    # CONNECTED /var/run/redis/redis.sock
+    build:
+      context: ./openvasx
+    privileged: true
+    sysctls:
+      net.core.somaxconn: '2048'
+    volumes:
+      - openvasx-var-lib:/var/lib/openvas
+      - run-redis:/var/run/redis
+    depends_on:
+      - "gvm-postgres"
+
   # It is recommended to add vm.overcommit_memory=1 into
   # /etc/systcl.conf on the host
   redis:
@@ -75,6 +89,7 @@ services:
 volumes:
   redis-data:
   openvas-var-lib:
+  openvasx-var-lib:
   gvm-var-lib:
   postgres-data:
   run-redis:

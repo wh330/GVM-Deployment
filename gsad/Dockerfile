@@ -15,7 +15,7 @@ ENV GVMD_HOST="gvmd" \
 ENV PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH \
     PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin
 
-RUN echo PATH=\"$PATH\" > /etc/environment \
+RUN echo PATH=\"$PATH\" > /etc/environment && \
     echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf
 
 RUN useradd -r -d /opt/gvm -c "GVM User" -s /bin/bash gvm && \

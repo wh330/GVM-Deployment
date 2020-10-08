@@ -9,9 +9,8 @@ fi
 if [ "$1" = 'gvmd' ]; then
     gvm-manage-certs -q -a &> /dev/nul || true
 
-	# Generate and copy the certs needed by the scanners to /usr/var/lib/gvm/
-	cp /var/lib/gvm/CA/cacert.pem /usr/var/lib/gvm/cacert.pem
-	gvm-manage-certs -c &> /dev/nul || true
+	# Create directory for scanners certs
+	mkdir -p /usr/var/lib/gvm
 
     if [ -z "${SKIP_WAIT_DB}" ]; then
 	echo "waiting for the database..."

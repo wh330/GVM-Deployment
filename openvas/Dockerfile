@@ -1,27 +1,22 @@
 FROM ubuntu:20.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-COPY install-pkgs.sh /install-pkgs.sh
-
-RUN bash /install-pkgs.sh
+ENV DEBIAN_FRONTEND=noninteractive \
+    PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH \
+    PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin \
+    PYTHONPATH=/opt/gvm/lib/python3.8/site-packages
 
 ENV gvm_libs_version="gvm-libs-11.0" \
     ospd_version="ospd-2.0" \
     ospd_openvas_version="ospd-openvas-1.0" \
     openvas_version="openvas-7.0"
 
-ENV PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH \
-    PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin
+COPY install-pkgs.sh /install-pkgs.sh
 
-RUN echo PATH=\"$PATH\" > /etc/environment && \
-    echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf
-
-RUN useradd -r -d /opt/gvm -c "GVM User" -s /bin/bash gvm && \
-    mkdir /opt/gvm && \
-    chown gvm:gvm /opt/gvm
-
-RUN mkdir /gvm-source
+RUN bash /install-pkgs.sh && \
+    echo PATH=\"$PATH\" > /etc/environment && \
+    echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf && \
+    mkdir /gvm-source && \
+    mkdir -p /opt/gvm/lib/python3.8/site-packages/
 
 #
 # install libraries module for the Greenbone Vulnerability Management Solution
@@ -69,9 +64,6 @@ RUN cd /gvm-source && \
 #
 # Install Open Scanner Protocol daemon (OSPd)
 #
-RUN mkdir -p /opt/gvm/lib/python3.8/site-packages/
-ENV PYTHONPATH=/opt/gvm/lib/python3.8/site-packages
-
 RUN cd /gvm-source && \
     git clone -b $ospd_version https://github.com/greenbone/ospd.git && \
     cd ospd && \

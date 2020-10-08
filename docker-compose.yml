@@ -22,12 +22,13 @@ services:
     build:
       context: ./gvmd
     environment:
-    - GVMD_POSTGRESQL_URI=postgresql://gvmduser:mypassword@gvm-postgres:5432/gvmd?application_name=gvmd
+      - GVMD_POSTGRESQL_URI=postgresql://gvmduser:mypassword@gvm-postgres:5432/gvmd?application_name=gvmd
     volumes:
       - openvas-var-lib:/var/lib/openvas
       - gvm-var-lib:/var/lib/gvm
       - run-redis:/var/run/redis
       - run-ospd:/var/run/ospd
+      - ./certs:/usr/var/lib/gvm
     depends_on:
       - "gvm-postgres"
 
@@ -57,6 +58,26 @@ services:
     depends_on:
       - "gvm-postgres"
 
+  openvas-1:
+    # Additional openvas instance listening on TCP
+    # CONNECTED /var/run/redis/redis.sock
+    build:
+      context: ./openvas
+    command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b openvas-1 -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
+    privileged: true
+    sysctls:
+      net.core.somaxconn: '2048'
+    volumes:
+      - openvas-var-lib-1:/var/lib/openvas
+      - run-redis:/var/run/redis
+    secrets:
+      - key.pem
+      - cert.pem
+      - cacert.pem
+    depends_on:
+      - "gvmd"
+      - "gvm-postgres"
+
   # It is recommended to add vm.overcommit_memory=1 into
   # /etc/systcl.conf on the host
   redis:
@@ -75,7 +96,16 @@ services:
 volumes:
   redis-data:
   openvas-var-lib:
+  openvas-var-lib-1:
   gvm-var-lib:
   postgres-data:
   run-redis:
   run-ospd:
+
+secrets:
+  key.pem:
+    file: certs/key.pem
+  cert.pem:
+    file: certs/cert.pem
+  cacert.pem:
+    file: certs/cacert.pem

@@ -5,6 +5,8 @@ set -e
 export OV_MAX_HOST=${OV_MAX_HOST:-5}
 export OV_MAX_CHECKS=${OV_MAX_CHECKS:-4}
 
+mkdir -p /etc/openvas/
+
 cat >/etc/openvas/openvas.conf<<-EOF
 max_hosts = ${OV_MAX_HOST}
 max_checks = ${OV_MAX_CHECKS}

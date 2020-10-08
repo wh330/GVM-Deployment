@@ -5,8 +5,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV GVMD_POSTGRESQL_URI="postgresql://gvmduser:password@postgres:5432/gvmd?application_name=gvmd" \
     GVMD_USER=admin
 
-ENV GVM_CERT_DIR=/usr/var/lib/gvm
-
 RUN set -ex; \
     apt update; \
     apt install -y --no-install-recommends gnupg; \
@@ -21,6 +19,8 @@ RUN set -ex; \
     sed -i 's/if \[ "`id -u`" -eq "0" \]/if fasle \&\& [ "`id -u`" -eq "0" ]/' /usr/bin/greenbone-nvt-sync; \
     rm -rf ./openvas_*.deb; \
     rm -rf /var/lib/apt/lists/*
+
+ADD add-scanner.sh .
 
 VOLUME /var/lib/gvm/
 

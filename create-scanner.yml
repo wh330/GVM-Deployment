@@ -1,0 +1,31 @@
+# Create remote scanner
+version: '3.2'
+services:
+  openvas-1:
+    # CONNECTED /var/run/redis/redis.sock
+    build:
+      context: ./openvas
+    command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b openvas-1 -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
+    privileged: true
+    sysctls:
+      net.core.somaxconn: '2048'
+    volumes:
+      - openvas-var-lib-1:/var/lib/openvas
+      - run-redis:/var/run/redis
+    secrets:
+      - key.pem
+      - cert.pem
+      - cacert.pem
+    depends_on:
+      - "gvmd"
+
+volumes:
+  openvas-var-lib-1:
+
+secrets:
+  key.pem:
+    file: certs/key.pem
+  cert.pem:
+    file: certs/cert.pem
+  cacert.pem:
+    file: certs/cacert.pem

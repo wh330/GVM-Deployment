@@ -1,5 +1,4 @@
 #!/bin/bash
-
 apt-get update
 
 { cat <<EOF
@@ -51,7 +50,6 @@ texlive-latex-extra
 xsltproc
 EOF
 } | xargs apt-get install -yq --no-install-recommends
-
 
 # Install Node.js
 curl -sL https://deb.nodesource.com/setup_10.x | bash -

@@ -1,8 +1,8 @@
-version: '2.1'
-
+version: '3.2'
 services:
   nvt-sync:
-    image: admirito/openvas:11
+    build:
+      context: ./openvas
     volumes:
       - openvas-var-lib:/var/lib/openvas
       - run-redis:/var/run/redis
@@ -10,5 +10,4 @@ services:
     command: greenbone-nvt-sync
 
     depends_on:
-      gvmd:
-        condition: service_started
+      - "gvmd"

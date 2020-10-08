@@ -1,0 +1,16 @@
+# Generate keys for added scanners
+version: '3.2'
+services:
+  scanner-certs:
+    build:
+      context: ./gvmd
+    environment:
+      - GVM_CERT_DIR=/usr/var/lib/gvm
+    volumes:
+      - gvm-var-lib:/var/lib/gvm
+      - ./certs:/usr/var/lib/gvm
+    command: >
+      bash -c "cp /var/lib/gvm/CA/cacert.pem /usr/var/lib/gvm/
+      && gvm-manage-certs -c"
+    depends_on:
+      - "gvmd"

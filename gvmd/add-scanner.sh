@@ -21,10 +21,6 @@ SCANNER_KEY_PRIVE=${SCANNER_KEY_PRIVE:-/usr/var/lib/gvm/key.pem}
 
 echo "Adding scanner $SCANNER_NAME..."
 
-echo "gvmd --create-scanner=$SCANNER_NAME --scanner-host=$SCANNER_HOST --scanner-port=$SCANNER_PORT
-     --scanner-type=$SCANNER_TYPE --scanner-ca-pub=$SCANNER_CA_PUB
-     --scanner-key-pub=$SCANNER_KEY_PUB --scanner-key-priv=$SCANNER_KEY_PRIVE"
-
 gvmd --create-scanner=$SCANNER_NAME --scanner-host=$SCANNER_HOST --scanner-port=$SCANNER_PORT \
      --scanner-type=$SCANNER_TYPE --scanner-ca-pub=$SCANNER_CA_PUB \
      --scanner-key-pub=$SCANNER_KEY_PUB --scanner-key-priv=$SCANNER_KEY_PRIVE

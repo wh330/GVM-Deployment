@@ -79,6 +79,12 @@ RUN cd /gvm-source && \
 
 RUN ldconfig
 
+# Add and configure user 'gvm' for greenbone-nvt-sync
+RUN useradd -M -s /bin/bash gvm && \
+    echo "gvm ALL = NOPASSWD: /opt/gvm/bin/greenbone-nvt-sync" > /etc/sudoers.d/gvm && \
+    chown -R gvm:gvm /opt/gvm/var/lib/openvas && \
+    chown -R gvm:gvm /opt/gvm/var/run
+
 # Add Tini
 ARG TINI_VERSION="v0.19.0"
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini

@@ -49,6 +49,8 @@ python3-pip
 texlive-fonts-recommended
 texlive-latex-extra
 xsltproc
+rsync
+sudo
 EOF
 } | xargs apt-get install -yq --no-install-recommends
 

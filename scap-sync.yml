@@ -3,11 +3,7 @@ services:
   scap-sync:
     image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd
     volumes:
-      - openvas-var-lib:/var/lib/openvas
       - gvm-var-lib:/var/lib/gvm
-      - run-redis:/var/run/redis
-      - run-ospd:/var/run/ospd
     command: greenbone-scapdata-sync --curl --verbose
-
     depends_on:
       - "gvmd"

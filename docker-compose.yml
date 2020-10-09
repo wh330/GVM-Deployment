@@ -53,7 +53,7 @@ services:
       net.core.somaxconn: '2048'
     volumes:
       - run-redis:/var/run/redis
-      - openvas-var-lib:/var/lib/openvas
+      - openvas-var-lib:/opt/gvm/var/lib/openvas
       - run-ospd:/var/run/ospd
     depends_on:
       - "gvm-postgres"

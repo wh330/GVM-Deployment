@@ -10,7 +10,8 @@ services:
     sysctls:
       net.core.somaxconn: '2048'
     volumes:
-      - openvas-var-lib-1:/var/lib/openvas
+      # The remote scanner points to the same volume used by the default one
+      - openvas-var-lib:/opt/gvm/var/lib/openvas
       - run-redis:/var/run/redis
     secrets:
       - key.pem
@@ -18,9 +19,6 @@ services:
       - cacert.pem
     depends_on:
       - "gvmd"
-
-volumes:
-  openvas-var-lib-1:
 
 secrets:
   key.pem:

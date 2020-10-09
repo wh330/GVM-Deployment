@@ -4,7 +4,7 @@ services:
     build:
       context: ./openvas
     volumes:
-      - openvas-var-lib:/var/lib/openvas
+      - openvas-var-lib:/opt/gvm/var/lib/openvas
       - run-redis:/var/run/redis
       - run-ospd:/var/run/ospd
     command: su - gvm -c "greenbone-nvt-sync"

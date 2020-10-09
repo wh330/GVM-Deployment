@@ -1,8 +1,7 @@
 version: '3.2'
 services:
   nvt-sync:
-    build:
-      context: ./openvas
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/openvas
     volumes:
       - openvas-var-lib:/opt/gvm/var/lib/openvas
       - run-redis:/var/run/redis

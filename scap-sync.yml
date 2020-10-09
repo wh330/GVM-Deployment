@@ -1,8 +1,7 @@
 version: '3.2'
 services:
   scap-sync:
-    build:
-      context: ./gvmd
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd
     volumes:
       - openvas-var-lib:/var/lib/openvas
       - gvm-var-lib:/var/lib/gvm

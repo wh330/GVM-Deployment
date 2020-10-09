@@ -3,8 +3,7 @@ version: '3.2'
 services:
   openvas-1:
     # CONNECTED /var/run/redis/redis.sock
-    build:
-      context: ./openvas
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/openvas
     command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b openvas-1 -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
     privileged: true
     sysctls:

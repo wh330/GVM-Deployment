@@ -7,8 +7,7 @@ services:
       - "gvmd"
 
   gvm-postgres:
-    build:
-      context: ./gvm-postgres
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvm-postgres
     environment:
       - PGDATA=/var/lib/postgresql/data
       - POSTGRES_DB=gvmd
@@ -18,8 +17,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   gvmd:
-    build:
-      context: ./gvmd
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd
     environment:
       - GVMD_POSTGRESQL_URI=postgresql://gvmduser:mypassword@gvm-postgres:5432/gvmd?application_name=gvmd
     volumes:
@@ -32,8 +30,7 @@ services:
       - "gvm-postgres"
 
   gsad:
-    build:
-      context: ./gsad
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gsad
     ports:
       - 8080:80
     environment:
@@ -46,8 +43,7 @@ services:
   openvas:
     # LISTENING /var/run/ospd/ospd.sock
     # CONNECTED /var/run/redis/redis.sock
-    build:
-      context: ./openvas
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/openvas
     privileged: true
     sysctls:
       net.core.somaxconn: '2048'

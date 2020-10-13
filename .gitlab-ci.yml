@@ -1,46 +1,138 @@
+# we only need a build stage
+stages:
+  - build
+
 image: docker:19.03.12
 
 services:
     - docker:19.03.12-dind
 
-stages:
+variables:
+  PUSH_DOCKER: "True"
+  PUSH_GITLAB: "True"
+  PUSH_TEST_IMAGES: "False"
+  ENVSUBST_DOCKERFILE: "False"
+
+# template (hidden job) for the 'real' build and push jobs to extend
+.build_and_push:
+  stage: build
+  script:
     - build
+    - push_local
+    - push_docker
+  variables:
+    ONLY_PUSH_ON_BRANCH: master
+    WHEN_TO_RUN: "daily"
+  only:
+    refs:
+      - branches
+    # variables:
+    #   - $SCHEDULE_RUN == $WHEN_TO_RUN
 
+# 'real' jobs
+gvmd:
+  extends: .build_and_push
+  variables:
+    IMAGE_TYPE: gvmd
+    IMAGE_NAME: gvmd
+    TAGS: 9 9.0 9.0.1 latest
+
+gsa:
+  extends: .build_and_push
+  variables:
+    IMAGE_TYPE: gsa
+    IMAGE_NAME: gsa
+    TAGS: 9 9.0 latest
+
+gvm-postgres:
+  extends: .build_and_push
+  variables:
+    IMAGE_TYPE: gvm-postgres
+    IMAGE_NAME: gvm-postgres
+    TAGS: 12
+
+openvas:
+  extends: .build_and_push
+  variables:
+    IMAGE_TYPE: openvas
+    IMAGE_NAME: openvas
+    TAGS: 7 7.0 latest
+
+# build and push functions used by jobs
+.functions: &functions |
+
+  function build() {
+    if [ "${ENVSUBST_DOCKERFILE}" == "True" ]; then
+      apk update
+      apk add gettext  # for envsubst command
+      echo "Building ${IMAGE_TYPE} with envsubst of Dockerfile"
+      envsubst < "./${IMAGE_TYPE}/Dockerfile" | \
+        docker build -t "${IMAGE_TYPE}" -f - "${IMAGE_TYPE}"
+    elif [ ! -z "${BUILD_ARGS}" ]; then
+      for a in ${BUILD_ARGS}
+      do
+        ARG_LIST="${ARG_LIST}--build-arg $a "
+      done
+      echo "Building ${IMAGE_TYPE} with '${ARG_LIST}'"
+      docker build -t "${IMAGE_TYPE}" ${ARG_LIST} "${IMAGE_TYPE}"
+    else
+      echo "Building ${IMAGE_TYPE}"
+      docker build -t "${IMAGE_TYPE}" "${IMAGE_TYPE}"
+    fi
+  }
+
+  function push_local() {
+    if [ "${PUSH_GITLAB}" == "True" ]; then
+      IMAGE_FOLDER=${CI_REGISTRY_IMAGE}
+      if [ "${CI_COMMIT_REF_NAME}" != "${ONLY_PUSH_ON_BRANCH}" ]; then
+        # If the PUSH_TEST_IMAGES variable is set, push images to a test sub-folder
+        # in the image registry.
+        if [ ! -z "${PUSH_TEST_IMAGES}" ]; then
+          echo "Branch '${CI_COMMIT_REF_NAME}' is not '${ONLY_PUSH_ON_BRANCH}' so pushing to 'test'."
+          IMAGE_FOLDER=${IMAGE_FOLDER}/test
+        else
+          echo "Not pushing: Branch '${CI_COMMIT_REF_NAME}' is not '${ONLY_PUSH_ON_BRANCH}'"
+          IMAGE_FOLDER=
+        fi
+      fi
+      if [ ! -z "${IMAGE_FOLDER}" ]; then
+        echo "Registry login with ${CI_REGISTRY_USER}"
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        for tag in ${TAGS}; do
+          IMAGE_TAG=${IMAGE_FOLDER}/${IMAGE_NAME}:${tag}
+          echo "Tagging image ${IMAGE_TAG}"
+          docker tag "${IMAGE_TYPE}" "${IMAGE_TAG}"
+          docker push "${IMAGE_TAG}"
+        done
+      fi
+    else
+      echo "Not pushing: GitLab pushes are disabled for this build"
+    fi
+  }
+
+  function push_docker() {
+    if [ "${PUSH_DOCKER}" == "True" ]; then
+      if [ "${CI_COMMIT_REF_NAME}" == "${ONLY_PUSH_ON_BRANCH}" ]; then
+        if [ ! -z "${DOCKER_USER}" ] && [ ! -z "${DOCKER_PASS}" ]; then
+          echo "Docker Hub login"
+          docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+          for tag in ${TAGS}; do
+            IMAGE_TAG=${DOCKER_ORG}/${IMAGE_NAME}:${tag}
+            echo "Tagging image ${IMAGE_TAG}"
+            docker tag "${IMAGE_TYPE}" "${IMAGE_TAG}"
+            docker push "${IMAGE_TAG}"
+          done
+        else
+          echo "Not pushing: no DOCKER_USER and DOCKER_PASS variables"
+        fi
+      else
+        echo "Not pushing: branch '${CI_COMMIT_REF_NAME}' is not '${ONLY_PUSH_ON_BRANCH}'."
+      fi
+    else
+      echo "Not pushing: Docker hub pushes are disabled for this build"
+    fi
+  }
+
+# load functions before jobs start
 before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
-build:gsad:
-    stage: build
-    script:
-        - cd gsad
-        - docker pull $CI_REGISTRY_IMAGE/gsad:latest || true
-        - docker build --cache-from $CI_REGISTRY_IMAGE/gsad:latest --tag $CI_REGISTRY_IMAGE/gsad:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/gsad:latest .
-        - docker push $CI_REGISTRY_IMAGE/gsad:$CI_COMMIT_SHA
-        - docker push $CI_REGISTRY_IMAGE/gsad:latest
-
-build:gvm-postgres:
-    stage: build
-    script:
-        - cd gvm-postgres
-        - docker pull $CI_REGISTRY_IMAGE/gvm-postgres:latest || true
-        - docker build --cache-from $CI_REGISTRY_IMAGE/gvm-postgres:latest --tag $CI_REGISTRY_IMAGE/gvm-postgres:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/gvm-postgres:latest .
-        - docker push $CI_REGISTRY_IMAGE/gvm-postgres:$CI_COMMIT_SHA
-        - docker push $CI_REGISTRY_IMAGE/gvm-postgres:latest
-
-build:gvmd:
-    stage: build
-    script:
-        - cd gvmd
-        - docker pull $CI_REGISTRY_IMAGE/gvmd:latest || true
-        - docker build --cache-from $CI_REGISTRY_IMAGE/gvmd:latest --tag $CI_REGISTRY_IMAGE/gvmd:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/gvmd:latest .
-        - docker push $CI_REGISTRY_IMAGE/gvmd:$CI_COMMIT_SHA
-        - docker push $CI_REGISTRY_IMAGE/gvmd:latest
-
-build:openvas:
-    stage: build
-    script:
-        - cd openvas
-        - docker pull $CI_REGISTRY_IMAGE/openvas:latest || true
-        - docker build --cache-from $CI_REGISTRY_IMAGE/openvas:latest --tag $CI_REGISTRY_IMAGE/openvas:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/openvas:latest .
-        - docker push $CI_REGISTRY_IMAGE/openvas:$CI_COMMIT_SHA
-        - docker push $CI_REGISTRY_IMAGE/openvas:latest
+  - *functions

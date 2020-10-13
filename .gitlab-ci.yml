@@ -49,7 +49,7 @@ gvm-postgres:
   variables:
     IMAGE_TYPE: gvm-postgres
     IMAGE_NAME: gvm-postgres
-    TAGS: 12
+    TAGS: 12 latest
 
 openvas:
   extends: .build_and_push

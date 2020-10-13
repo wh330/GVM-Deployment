@@ -12,13 +12,13 @@ The project builds the following docker images:
 - OpenVAS scanner version 7.0 built from https://github.com/greenbone/openvas.git.
 
 ## Deployment
-Currently we support deployment with `docker-compose`.
+Currently we support deployment with `docker-compose`. GSAD can be accessed on http://dev.gvm.srv.uis.private.cam.ac.uk
 
 To run the GVM containers with a [GMP client](https://gitlab.developers.cam.ac.uk/wh330/gmp-client) for API access to `gvmd`:
 ```bash
 docker-compose -f docker-compose.yml up
 ```
-Then, you'll be able to access the GSAD on http://localhost:8080.
+Then, you'll be able to access the GSAD on http://localhost:8080. A development instance is running on http://dev.gvm.srv.uis.private.cam.ac.uk.
 
 To run NVT data sync:
 ```bash
@@ -27,12 +27,12 @@ docker-compose -f docker-compose.yml -f nvt-sync.yml up
 
 To run SCAP data sync:
 ```bash
-docker-compose -f docker-compose.yml -f nvt-sync.yml up 
+docker-compose -f docker-compose.yml -f scap-sync.yml up 
 ```
 
 To run CERT data sync:
 ```bash
-docker-compose -f docker-compose.yml -f nvt-sync.yml up 
+docker-compose -f docker-compose.yml -f cert-sync.yml up 
 ```
 
 To add a remote OpenVAS scanner:

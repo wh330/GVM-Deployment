@@ -8,7 +8,7 @@ Management with containers. It is based on the [Greenbone Source Edition (GSE)](
 The project builds the following docker images:
 - Greenbone Vulnerability Manager version 9.0.1 built based on [admirito's GVM PPA](https://launchpad.net/~mrazavi/+archive/ubuntu/gvm).
 - PostgreSQL 12 Database with `libgvm-pg-server` built based on [admirito's GVM PPA](https://launchpad.net/~mrazavi/+archive/ubuntu/gvm)
-- Greenbone Security Assistant version 9.0 built from https://github.com/greenbone/gvm-libs.git. 
+- Greenbone Security Assistant version 9.0 built from https://github.com/greenbone/gsa.git. 
 - OpenVAS scanner version 7.0 built from https://github.com/greenbone/openvas.git.
 
 ## Deployment

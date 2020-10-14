@@ -37,11 +37,11 @@ gvmd:
     IMAGE_NAME: gvmd
     TAGS: 9 9.0 9.0.1 latest
 
-gsa:
+gsad:
   extends: .build_and_push
   variables:
-    IMAGE_TYPE: gsa
-    IMAGE_NAME: gsa
+    IMAGE_TYPE: gsad
+    IMAGE_NAME: gsad
     TAGS: 9 9.0 latest
 
 gvm-postgres:

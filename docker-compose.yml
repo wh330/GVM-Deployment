@@ -29,7 +29,7 @@ services:
     depends_on:
       - "gvm-postgres"
 
-  gsa:
+  gsad:
     image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gsa
     ports:
       - 8080:80

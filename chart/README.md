@@ -45,3 +45,8 @@ The following table lists some of the useful configurable parameters of the GVM 
 | gvmd-db.postgresqlPassword                | the password for "gvmduser" in "gvmd" postgresql database    | ""      |
 | gvmd-db.persistence.existingClaim         | name of an existing pvc for postgresql data persistence      | ""      |
 | openvas-redis.persistence.existingClaim | name of an existing pvc for redis data persistence           | ""      |
+
+## To-do
+- Update [Configuration](#configuration).
+- Create Cronjobs for the jobs in [./jobs](./jobs).
+- Add GMP client deployment.

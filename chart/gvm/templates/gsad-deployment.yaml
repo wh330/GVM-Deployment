@@ -2,12 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "gvm.fullname" . }}-gsad
+  namespace: {{ .Values.namespace.name }}
   labels:
   {{- $_ := set . "applicationNameSuffix" "gsad" }}
   {{- include "gvm.labels" . | nindent 4 }}
   {{- $_ := set . "applicationNameSuffix" "" }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.gsadReplicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "gvm.name" . }}-gsad

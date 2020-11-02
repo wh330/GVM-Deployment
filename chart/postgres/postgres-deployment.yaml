@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gvmd-db
+    release: gvm
+    role: master 
+  name: gvm-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gvmd-db
+      release: gvm
+      role: master 
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gvmd-db
+        release: gvm
+        role: master 
+    spec:
+      containers:
+      - image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvm-postgres:12
+        name: gvm-postgres
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        - name: POSTGRES_DB
+          value: gvmd
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          subPath: postgres
+          name: data-volume
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: "100m"
+            memory: 1Gi
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: data-volume

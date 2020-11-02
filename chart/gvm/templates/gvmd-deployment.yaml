@@ -2,12 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "gvm.fullname" . }}-gvmd
+  namespace: {{ .Values.namespace.name }}
   labels:
   {{- $_ := set . "applicationNameSuffix" "gvmd" }}
   {{- include "gvm.labels" . | nindent 4 }}
   {{- $_ := set . "applicationNameSuffix" "" }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.gvmdReplicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "gvm.name" . }}-gvmd
@@ -29,13 +30,18 @@ spec:
           env:
             - name: GVMD_POSTGRESQL_HOST
               value: {{ .Release.Name }}-gvmd-db
-            - name: GVMD_POSTGRESQL_PASSWORD
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "gvmd.secretName" . }}
-                  key: postgresql-password
+                  name: {{ .Values.postgres.secretName }}
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secretName }}
+                  key: password
             - name: GVMD_POSTGRESQL_URI
-              value: "postgresql://gvmduser:$(GVMD_POSTGRESQL_PASSWORD)@$(GVMD_POSTGRESQL_HOST):5432/gvmd?application_name=gvmd"
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(GVMD_POSTGRESQL_HOST):5432/gvmd?application_name=gvmd"
           ports:
             - name: gvmd
               containerPort: 9390
@@ -43,23 +49,34 @@ spec:
           livenessProbe:
             tcpSocket:
               port: gvmd
+            initialDelaySeconds: 150
+            periodSeconds: 80
+            failureThreshold: 5
           readinessProbe:
             tcpSocket:
               port: gvmd
+            initialDelaySeconds: 120
+            periodSeconds: 10
           volumeMounts:
             - name: run-dir
               mountPath: /var/run
             - name: ospd-socket-dir
               mountPath: /var/run/ospd
             - name: data-volume
-              subPath: {{ include "gvm.dataSubPathPrefix" . }}plugins
-              mountPath: /var/lib/openvas/plugins
+              subPath: openvas
+              mountPath: /var/lib/openvas
             - name: data-volume
-              subPath: {{ include "gvm.dataSubPathPrefix" . }}cert-data
+              subPath: gvm
+              mountPath: /var/lib/gvm
+            - name: data-volume
+              subPath: scap-data
+              mountPath: /var/lib/gvm/scap-data
+            - name: data-volume
+              subPath: cert-data
               mountPath: /var/lib/gvm/cert-data
             - name: data-volume
-              subPath: {{ include "gvm.dataSubPathPrefix" . }}scap-data
-              mountPath: /var/lib/gvm/scap-data
+              subPath: certs
+              mountPath: /usr/var/lib/gvm
           resources:
             {{- toYaml .Values.resources.gvmd | nindent 12 }}
         - name: {{ .Chart.Name }}-openvas-connector

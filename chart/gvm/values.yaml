@@ -2,7 +2,17 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+gvmdReplicaCount: 1
+
+openvasReplicaCount: 1
+
+gsadReplicaCount: 1
+
+remoteScannerReplicaCount: 0
+
+# Define the namespace for the gvm deployment
+namespace:
+  name: default
 
 # To change all the gvm tags together you can use go templates.
 # Example:
@@ -19,19 +29,24 @@ replicaCount: 1
   
 image:
   gvmd:
-    registry: "docker.io"
-    repository: "admirito/gvmd"
-    tag: "11"
-    pullPolicy: IfNotPresent
+    registry: "registry.gitlab.developers.cam.ac.uk"
+    repository: wh330/gvm-deployment/test/gvmd
+    tag: "9"
+    pullPolicy: Always
   gsad:
-    registry: "docker.io"
-    repository: "admirito/gsad"
-    tag: "11"
+    registry: "registry.gitlab.developers.cam.ac.uk"
+    repository: wh330/gvm-deployment/test/gsad
+    tag: "9"
     pullPolicy: IfNotPresent
   openvas:
+    registry: "registry.gitlab.developers.cam.ac.uk"
+    repository: wh330/gvm-deployment/test/openvas
+    tag: "7"
+    pullPolicy: IfNotPresent
+  redis:
     registry: "docker.io"
-    repository: "admirito/openvas"
-    tag: "11"
+    repository: "redis"
+    tag: "6.0.9"
     pullPolicy: IfNotPresent
   socat:
     registry: "docker.io"
@@ -52,13 +67,20 @@ gvmdService:
   type: ClusterIP
   port: 9390
 
+# headless service
+remoteScannerService:
+  type: ClusterIP
+  clusterIP: None
+  port: 9391
+
 openvasService:
   type: ClusterIP
   port: 9391
 
-#gsa service
+# gsa service
 service:
-  type: ClusterIP
+  type: NodePort
+  nodePort: 32535
   port: 80
 
 ingress:
@@ -76,30 +98,61 @@ ingress:
   #      - chart-example.local
 
 resources:
-  gvmd: {}
-  gvmdOpenvasConnector: {}
-  openvas: {}
-  openvasListener: {}
-  openvasRedisConnector: {}
-  gsad: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  gvmd:
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: "100m"
+      memory: 100Mi
+  gvmdOpenvasConnector:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: "100m"
+      memory: 100Mi
+  openvas:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: "100m"
+      memory: 100Mi
+  openvasListener:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: "100m"
+      memory: 100Mi
+  openvasRedis:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: "100m"
+      memory: 100Mi
+  gsad:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: "100m"
+      memory: 100Mi
+  remoteScanner:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 1
+      memory: 1Gi
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-
-# call nvt-sync after chart installation
-syncNvtPluginsAfterInstall: true
-
-# call scapdata-sync and certdata-sync after chart installation
-syncScapCertDataAfterInstall: false
 
 # the value of dataSubPathPrefix will be used as the prefix for
 # subPath in volumeMounts of gvmd/openvas deployments for the
@@ -115,8 +168,8 @@ persistence:
   # possible
   enabled: true
 
-  # existing PVC to be used instead of creating a new one
-  existingClaim: ""
+  # existing PVC to be used as data-volume-gvm
+  existingClaim: "data-volume"
 
   # PVC annotations
   # annotations:
@@ -126,30 +179,12 @@ persistence:
   # volumeName:
   size: 1Mi
 
-gvmd-db:
-  image:
-    # You can override this one, or global.imageRegistry
-    registry: "docker.io"
-    repository: admirito/gvm-postgres
-    tag: "10"
-  volumePermissions:
-    enabled: false
-  securityContext:
-    enabled: false
-  postgresqlUsername: gvmduser
-  postgresqlDatabase: gvmd
-  extraEnv: {}
-  #persistence:
-  #  existingClaim:
+postgres:
+  secretName: gvm-postgres-secret
+  username: gvmduser
+  password: password
 
-openvas-redis:
-  image:
-    # You can override this one, or global.imageRegistry
-    registry: "docker.io"
-    repository: bitnami/redis
-    tag: "5.0"
-  cluster:
-    enabled: false
-  usePassword: false
-  #persistence:
-  #  existingClaim:
+gmpClient:
+  secretName: gvm-gmpclient-secret
+  username: admin
+  password: admin

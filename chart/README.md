@@ -1,33 +1,33 @@
 # Helm chart for Greenbone Vulnerability Management (GVM)
-## Introduction
-You can use the provided helm chart in this repository to deploy Greenbone Source Edition (GSE) on your kubernetes cloud.
+## Helm installation
+To install helm, follow the instructions in https://helm.sh/docs/intro/install/.
 
-## Getting Helm
-To use `helm` you have to first install it! For more information about installing helm follow the instructions at [helm installation notes](https://github.com/helm/helm#install).
+The helm version used for this deployment:
+```bash
+$ helm version
+version.BuildInfo{Version:"v3.3.4", GitCommit:"a61ce5633af99708171414353ed49547cf05013d", GitTreeState:"clean", GoVersion:"go1.14.9"}
+```
 
 ## Building chart from source
-Use the following instructions to build the gvm helm chart from source:
+To build the gvm helm chart from source:
 
 ```bash
-cd gvm-deployment/chart
-
-helm dependency build gvm
+cd chart
 helm package gvm
 ```
-
-This should leave you with a `gvm-*.tgz` file ready to be deployed in the k8s.
+This should leave you with a `gvm-*.tgz` file ready to be deployed in k8s cluster.
 
 ## Installing GVM via helm chart
-GVM uses several components and databases that should be deployed on k8s. Therefore, to have better control on you installation it isrecommended to crate a separate namespace for it:
-
+A running Postgres database is required for the GVMd component. To deploy one for testing you can run the k8s deployment in [./postgres](./postgres). Note that a persistent volume claim should already be created, you can use the specification in [./volumes](./volumes).
 ```bash
-kubectl create namespace gvm
+cd chart/gvm
+kubectl apply -f postgres
 ```
 
-Then you can install the chart with helm:
+Install the chart:
 
 ```bash
-helm install ./gvm-*.tgz --namespace gvm --set gvmd-db.postgresqlPassword="mypassword"
+helm install gvm ./gvm-*.tgz --namespace gvm --set postgres.password="password" --set gmpClient.password="password"
 ```
 
 ## Configuration

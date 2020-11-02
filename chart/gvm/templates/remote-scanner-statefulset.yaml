@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "gvm.fullname" . }}-remote-scanner
+  namespace: {{ .Values.namespace.name }}
+  labels:
+  {{- $_ := set . "applicationNameSuffix" "remote-scanner" }}
+  {{- include "gvm.labels" . | nindent 4 }}
+  {{- $_ := set . "applicationNameSuffix" "" }}
+spec:
+  serviceName: {{ include "gvm.fullname" . }}-remote-scanner
+  replicas: {{ .Values.remoteScannerReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "gvm.name" . }}-remote-scanner
+      app.kubernetes.io/instance: {{ include "gvm.instance" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "gvm.name" . }}-remote-scanner
+        app.kubernetes.io/instance: {{ include "gvm.instance" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+        imagePullSecrets:
+          {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ tpl .Values.image.openvas.registry . }}/{{ tpl .Values.image.openvas.repository . }}:{{ tpl .Values.image.openvas.tag . }}"
+          imagePullPolicy: {{ .Values.image.openvas.pullPolicy }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: GMP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gmpClient.secretName }}
+                  key: username
+            - name: GMP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gmpClient.secretName }}
+                  key: password
+            - name: GVM_HOST
+              value: {{ include "gvm.fullname" . }}-gvmd
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - "/bin/sh"
+                - "-c"
+                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_USERNAME tls --hostname $GVM_HOST create-scanner.gmp.py $MY_POD_NAME $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner /usr/var/lib/gvm 9391'"
+            preStop:
+              exec:
+                command:
+                - "/bin/sh"
+                - "-c"
+                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_USERNAME tls --hostname $GVM_HOST delete-scanner.gmp.py $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner'"
+          command:
+            - "sh"
+            - "-c"
+            - "/tini -s -- bash /usr/local/bin/docker-entrypoint.sh ospd-openvas -l/dev/stdout -LINFO -p 9391 -b $MY_POD_NAME -k /usr/var/lib/gvm/key.pem -c /usr/var/lib/gvm/cert.pem --ca-file /usr/var/lib/gvm/cacert.pem -f"
+          volumeMounts:
+            - name: redis-socket-dir
+              mountPath: /var/run/redis
+            - name: data-volume
+              subPath: openvas
+              mountPath: /opt/gvm/var/lib/openvas
+            - name: data-volume
+              subPath: certs
+              mountPath: /usr/var/lib/gvm
+          ports:
+            - name: remote-scanner
+              containerPort: 9391
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: remote-scanner
+            initialDelaySeconds: 120
+            periodSeconds: 80
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: remote-scanner
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources.remoteScanner | nindent 12 }}
+        - name: {{ .Chart.Name }}-redis
+          image: "{{ tpl .Values.image.redis.registry . }}/{{ tpl .Values.image.redis.repository . }}:{{ tpl .Values.image.redis.tag . }}"
+          imagePullPolicy: {{ .Values.image.redis.pullPolicy }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - redis-server
+            - "/redis-master/redis.conf"
+          volumeMounts:
+            - name: redis-socket-dir
+              mountPath: /var/run/redis
+            - name: data-volume
+              mountPath: /data
+              subPathExpr: redis/$(MY_POD_NAME)
+            - name: config
+              mountPath: /redis-master  
+          resources:
+            {{- toYaml .Values.resources.openvasRedis | nindent 12 }}
+      volumes:
+        - name: redis-socket-dir
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ include "gvm.fullname" . }}-redis-openvas-config
+            items:
+            - key: redis-config
+              path: redis.conf
+        - name: data-volume
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ tpl .Values.persistence.existingClaim . | default (include "gvm.fullname" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

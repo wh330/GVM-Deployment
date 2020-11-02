@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gvm-generate-certs
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: gvm-gvm
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: gvm-gvm
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: gvm
+          image: "registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd:9"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: GVM_CERT_DIR
+            value: /usr/var/lib/gvm
+          command: ["sh", "-c", "cp /var/lib/gvm/CA/cacert.pem /usr/var/lib/gvm && gvm-manage-certs -c"]
+          volumeMounts:
+            - name: data-volume
+              subPath: gvm
+              mountPath: /var/lib/gvm
+            - name: data-volume
+              subPath: certs
+              mountPath: /usr/var/lib/gvm
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: data-volume

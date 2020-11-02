@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gvm.fullname" . }}-remote-scanner
+  namespace: {{ .Values.namespace.name }}
+  labels:
+  {{- $_ := set . "applicationNameSuffix" "remote-scanner" }}
+  {{- include "gvm.labels" . | nindent 4 }}
+  {{- if .Values.remoteScannerService.annotations }}
+  annotations:
+    {{- toYaml .Values.remoteScannerService.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.remoteScannerService.type }}
+  {{- if and .Values.remoteScannerService.clusterIP (eq .Values.remoteScannerService.type "ClusterIP") }}
+  clusterIP: {{ .Values.remoteScannerService.clusterIP }}
+  {{- end }}
+  ports:
+    - name: remote-scanner
+      port: {{ .Values.remoteScannerService.port }}
+      targetPort: remote-scanner
+      protocol: TCP
+      {{- if (and (eq .Values.remoteScannerService.type "NodePort") (not (empty .Values.remoteScannerService.nodePort))) }}
+      nodePort: {{ .Values.remoteScannerService.nodePort }}
+      {{- end }}
+  {{- if .Values.remoteScannerService.externalIPs }}
+  externalIPs:
+    {{- toYaml .Values.remoteScannerService.externalIPs | nindent 4 }}
+  {{- end }}
+  {{- if .Values.remoteScannerService.loadBalancerIP }}
+  loadBalancerIP: "{{ .Values.remoteScannerService.loadBalancerIP }}"
+  {{- end }}
+  {{- if .Values.remoteScannerService.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml .Values.remoteScannerService.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "gvm.name" . }}-remote-scanner
+    app.kubernetes.io/instance: {{ include "gvm.instance" . }}

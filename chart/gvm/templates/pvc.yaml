@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ include "gvm.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
   labels:
   {{- include "gvm.labels" . | nindent 4 }}
   {{- if .Values.persistence.annotations }}

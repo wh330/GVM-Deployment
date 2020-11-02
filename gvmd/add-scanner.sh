@@ -5,7 +5,7 @@ read -p "Scanner Name: " SCANNER_NAME
 read -p "Scanner Host: " SCANNER_HOST
 
 read -p "Scanner Port [9390]: " SCANNER_PORT
-SCANNER_PORT=${SCANNER_PORT:-9390}
+SCANNER_PORT=${SCANNER_PORT:-9391}
 
 read -p "Scanner Type [OpenVAS]: " SCANNER_TYPE
 SCANNER_TYPE=${SCANNER_TYPE:-OpenVAS}

@@ -10,16 +10,6 @@ keywords:
 home: https://community.greenbone.net/
 icon: https://community.greenbone.net/uploads/default/original/1X/2bd8ed1c87dd1a124f45b394039d3ec4bbf62e8e.png
 sources:
-  - https://github.com/admirito/gvm-containers
+  - https://gitlab.developers.cam.ac.uk/wh330/gvm-deployment
 maintainers:
-  - name: Mohammad Razavi
-    twitter: "@admirito"
-dependencies:
-  - name: postgresql
-    version: ~8.6.4
-    repository: '@stable'
-    alias: gvmd-db
-  - name: redis
-    version: ~10.5.7
-    repository: '@stable'
-    alias: openvas-redis
+  - name: wh330

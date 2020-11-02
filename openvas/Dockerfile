@@ -85,6 +85,12 @@ RUN useradd -M -s /bin/bash gvm && \
     chown -R gvm:gvm /opt/gvm/var/lib/openvas && \
     chown -R gvm:gvm /opt/gvm/var/run
 
+# copy dependencies for gvm-tools and scripts to add/remove the scanner
+COPY create-scanner.gmp.py delete-scanner.gmp.py requirements.txt ./
+
+# install dependencies
+RUN pip3 install -r requirements.txt
+
 # Add Tini
 ARG TINI_VERSION="v0.19.0"
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini

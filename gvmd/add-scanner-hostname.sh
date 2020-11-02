@@ -12,7 +12,7 @@ fi
 
 SCANNER_NAME=$1
 SCANNER_HOST=$1
-SCANNER_PORT=9390
+SCANNER_PORT=9391
 SCANNER_TYPE=OpenVAS
 SCANNER_CA_PUB=/usr/var/lib/gvm/cacert.pem
 SCANNER_KEY_PUB=/usr/var/lib/gvm/cert.pem

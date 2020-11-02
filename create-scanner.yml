@@ -3,7 +3,7 @@ version: '3.2'
 services:
   remote-scanner:
     # CONNECTED /var/run/redis/redis.sock
-    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/openvas
+    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/test/openvas
     command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b remote-scanner -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
     privileged: true
     sysctls:
@@ -11,13 +11,31 @@ services:
     volumes:
       # The remote scanner points to the same volume used by the default one
       - openvas-var-lib:/opt/gvm/var/lib/openvas
-      - run-redis:/var/run/redis
+      - remote-scanner-run-redis:/var/run/redis
     secrets:
       - key.pem
       - cert.pem
       - cacert.pem
     depends_on:
       - "gvmd"
+  # It is recommended to add vm.overcommit_memory=1 into
+  # /etc/systcl.conf on the host
+  remote-scanner-redis:
+    # LISTENING /var/run/redis/redis.sock
+    image: redis:5.0
+    volumes:
+      - remote-scanner-run-redis:/var/run/redis
+      - remote-scanner-redis-data:/data
+    command: redis-server --port 0 --unixsocket /var/run/redis/redis.sock --unixsocketperm 755
+    privileged: true
+    sysctls:
+      net.core.somaxconn: '2048'
+    depends_on:
+      - "remote-scanner"
+
+volumes:
+  remote-scanner-redis-data:
+  remote-scanner-run-redis:
 
 secrets:
   key.pem:

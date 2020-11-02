@@ -1,8 +1,10 @@
 # GVM deployment
 
 ## Introduction
-This project contains the tools to deploy Greenbone Vulnerability
-Management with containers. It is based on the [Greenbone Source Edition (GSE)](https://community.greenbone.net/c/gse) open source project.
+This project proposes and implements the following deployment of Greenbone Vulnerability Management using Docker containers.
+
+![](chart/docs/fps-deployment-design.png)
+
 
 ## Docker images
 The project builds the following docker images:
@@ -11,14 +13,13 @@ The project builds the following docker images:
 - Greenbone Security Assistant version 9.0 built from https://github.com/greenbone/gsa.git. 
 - OpenVAS scanner version 7.0 built from https://github.com/greenbone/openvas.git.
 
-## Deployment
-Currently we support deployment with `docker-compose`. GSAD can be accessed on http://dev.gvm.srv.uis.private.cam.ac.uk
+## Development
+For testing and development, you can deploy the GVM components with `docker-compose`:
 
-To run the GVM containers with a [GMP client](https://gitlab.developers.cam.ac.uk/wh330/gmp-client) for API access to `gvmd`:
 ```bash
 docker-compose -f docker-compose.yml up
 ```
-Then, you'll be able to access the GSAD on http://localhost:8080. A development instance is running on http://dev.gvm.srv.uis.private.cam.ac.uk.
+GSA dashboard will then be accessible on http://localhost:8080.
 
 To run NVT data sync:
 ```bash
@@ -63,8 +64,8 @@ util gpgme:MESSAGE:2020-10-09 16h16.01 utc:1349: Using OpenPGP engine version '2
 Scanner created.
 ```
 
-## Helm Chart (TODO)
-A helm chart for deploying the docker images on kubernetes is also available. For more information please read the [chart/README](./chart/README.md).
+## Production
+To deploy GVM components in Kubernetes cluster for production, use the helm chart described in [chart/README](./chart/README.md).
 
 ## Resources
 - https://github.com/admirito/gvm-containers

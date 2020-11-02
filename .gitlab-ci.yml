@@ -8,7 +8,7 @@ services:
     - docker:19.03.12-dind
 
 variables:
-  PUSH_DOCKER: "True"
+  PUSH_DOCKER: "False"
   PUSH_GITLAB: "True"
   PUSH_TEST_IMAGES: "False"
   ENVSUBST_DOCKERFILE: "False"

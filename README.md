@@ -1,7 +1,7 @@
 # GVM deployment
 
 ## Introduction
-This project proposes and implements the following deployment of Greenbone Vulnerability Management using Docker containers.
+This project proposes and implements the following deployment of [Greenbone Vulnerability Management](https://community.greenbone.net/t/about-gvm-architecture/1231) using Docker containers.
 
 ![](chart/docs/fps-deployment-design.png)
 

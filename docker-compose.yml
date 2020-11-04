@@ -36,7 +36,7 @@ services:
       - "gvm-postgres"
 
   gsad:
-    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gsa
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gsad
     ports:
       - 8080:80
     environment:

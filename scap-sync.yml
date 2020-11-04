@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   scap-sync:
-    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd
+    image: registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/gvmd
     volumes:
       - gvm-var-lib:/var/lib/gvm
     command: greenbone-scapdata-sync --curl --verbose

@@ -3,9 +3,12 @@ version: '3.2'
 services:
   remote-scanner:
     # CONNECTED /var/run/redis/redis.sock
-    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/test/openvas
+    image: registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/test/openvas
     command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b remote-scanner -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
     privileged: true
+    environment:
+      - GMP_USERNAME=admin
+      - GMP_PASSWORD=admin
     sysctls:
       net.core.somaxconn: '2048'
     volumes:

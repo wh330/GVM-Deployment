@@ -30,17 +30,17 @@ namespace:
 image:
   gvmd:
     registry: "registry.gitlab.developers.cam.ac.uk"
-    repository: wh330/gvm-deployment/test/gvmd
+    repository: infra/gvm-deployment/gvmd
     tag: "9"
     pullPolicy: Always
   gsad:
     registry: "registry.gitlab.developers.cam.ac.uk"
-    repository: wh330/gvm-deployment/test/gsad
+    repository: infra/gvm-deployment/gsad
     tag: "9"
     pullPolicy: IfNotPresent
   openvas:
     registry: "registry.gitlab.developers.cam.ac.uk"
-    repository: wh330/gvm-deployment/test/openvas
+    repository: infra/gvm-deployment/openvas
     tag: "7"
     pullPolicy: IfNotPresent
   redis:

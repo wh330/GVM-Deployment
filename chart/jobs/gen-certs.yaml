@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: gvm
-          image: "registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd:9"
+          image: "registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/gvmd:9"
           imagePullPolicy: IfNotPresent
           env:
           - name: GVM_CERT_DIR

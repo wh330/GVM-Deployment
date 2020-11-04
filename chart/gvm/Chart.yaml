@@ -10,6 +10,6 @@ keywords:
 home: https://community.greenbone.net/
 icon: https://community.greenbone.net/uploads/default/original/1X/2bd8ed1c87dd1a124f45b394039d3ec4bbf62e8e.png
 sources:
-  - https://gitlab.developers.cam.ac.uk/wh330/gvm-deployment
+  - https://gitlab.developers.cam.ac.uk/infra/gvm-deployment
 maintainers:
   - name: wh330

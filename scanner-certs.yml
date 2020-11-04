@@ -2,7 +2,7 @@
 version: '3.2'
 services:
   scanner-certs:
-    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/gvmd
+    image: registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/gvmd
     environment:
       - GVM_CERT_DIR=/usr/var/lib/gvm
     volumes:

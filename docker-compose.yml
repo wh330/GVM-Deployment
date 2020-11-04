@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   gmp-client:
-    image: registry.gitlab.developers.cam.ac.uk/wh330/gmp-client
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gmp-client
     command: sleep 36000
     environment:
       - GMP_USERNAME=admin

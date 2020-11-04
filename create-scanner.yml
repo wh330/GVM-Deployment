@@ -3,7 +3,7 @@ version: '3.2'
 services:
   remote-scanner:
     # CONNECTED /var/run/redis/redis.sock
-    image: registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/openvas
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/openvas
     command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b remote-scanner -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
     privileged: true
     environment:

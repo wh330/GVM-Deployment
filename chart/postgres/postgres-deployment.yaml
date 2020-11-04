@@ -23,7 +23,7 @@ spec:
         role: master 
     spec:
       containers:
-      - image: registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/gvm-postgres:12
+      - image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gvm-postgres:12
         name: gvm-postgres
         env:
         - name: PGDATA

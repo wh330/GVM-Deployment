@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: gvm
-          image: "registry.gitlab.developers.cam.ac.uk/infra/gvm-deployment/openvas:7"
+          image: "registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/openvas:7"
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "su gvm -c 'greenbone-nvt-sync'"]
           volumeMounts:

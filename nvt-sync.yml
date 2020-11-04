@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   nvt-sync:
-    image: registry.gitlab.developers.cam.ac.uk/wh330/gvm-deployment/openvas
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/openvas
     volumes:
       - openvas-var-lib:/opt/gvm/var/lib/openvas
     command: su - gvm -c "greenbone-nvt-sync"

@@ -29,7 +29,7 @@ services:
     volumes:
       - remote-scanner-run-redis:/var/run/redis
       - remote-scanner-redis-data:/data
-      - ./redis-openvas.conf:/redis-openvas.conf
+      - ./chart/redis/redis-openvas.conf:/redis-openvas.conf
     command: redis-server /redis-openvas.conf
     privileged: true
     sysctls:

@@ -64,11 +64,12 @@ services:
   # /etc/systcl.conf on the host
   redis:
     # LISTENING /var/run/redis/redis.sock
-    image: redis:5.0
+    image: redis:6.0.9
     volumes:
       - run-redis:/var/run/redis
       - redis-data:/data
-    command: redis-server --port 0 --unixsocket /var/run/redis/redis.sock --unixsocketperm 755
+      - ./chart/redis/redis-openvas.conf:/redis-openvas.conf
+    command: redis-server /redis-openvas.conf
     privileged: true
     sysctls:
       net.core.somaxconn: '2048'

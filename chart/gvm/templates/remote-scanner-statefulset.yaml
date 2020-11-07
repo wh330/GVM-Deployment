@@ -52,13 +52,13 @@ spec:
                 command:
                 - "/bin/sh"
                 - "-c"
-                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_USERNAME tls --hostname $GVM_HOST create-scanner.gmp.py $MY_POD_NAME $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner /usr/var/lib/gvm 9391'"
+                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_PASSWORD tls --hostname $GVM_HOST create-scanner.gmp.py $MY_POD_NAME $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner /usr/var/lib/gvm 9391'"
             preStop:
               exec:
                 command:
                 - "/bin/sh"
                 - "-c"
-                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_USERNAME tls --hostname $GVM_HOST delete-scanner.gmp.py $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner'"
+                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_PASSWORD tls --hostname $GVM_HOST delete-scanner.gmp.py $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner'"
           command:
             - "sh"
             - "-c"

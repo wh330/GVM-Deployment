@@ -4,7 +4,7 @@ services:
   remote-scanner:
     # CONNECTED /var/run/redis/redis.sock
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/openvas
-    command: ospd-openvas -l/dev/stdout -LINFO -p 9390 -b remote-scanner -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
+    command: ospd-openvas -l/dev/stdout -LINFO -p 9391 -b remote-scanner -k /run/secrets/key.pem -c /run/secrets/cert.pem --ca-file /run/secrets/cacert.pem -f
     privileged: true
     environment:
       - GMP_USERNAME=admin
@@ -25,11 +25,12 @@ services:
   # /etc/systcl.conf on the host
   remote-scanner-redis:
     # LISTENING /var/run/redis/redis.sock
-    image: redis:5.0
+    image: redis:6.0.9
     volumes:
       - remote-scanner-run-redis:/var/run/redis
       - remote-scanner-redis-data:/data
-    command: redis-server --port 0 --unixsocket /var/run/redis/redis.sock --unixsocketperm 755
+      - ./redis-openvas.conf:/redis-openvas.conf
+    command: redis-server /redis-openvas.conf
     privileged: true
     sysctls:
       net.core.somaxconn: '2048'

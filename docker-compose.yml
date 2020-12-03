@@ -3,9 +3,6 @@ services:
   gmp-client:
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/gmp-client
     command: sleep 36000
-    environment:
-      - GMP_USERNAME=admin
-      - GMP_PASSWORD=admin
     volumes:
       - ./certs:/certs
     depends_on:

@@ -7,7 +7,6 @@ services:
       - GMP_USERNAME=admin
       - GMP_PASSWORD=admin
     volumes:
-      - /home/wajdi/development/gmp-client:/usr/src/app:rw
       - ./certs:/certs
     depends_on:
       - "gvmd"

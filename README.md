@@ -43,7 +43,7 @@ docker-compose -f docker-compose.yml -f scanner-certs.yml up
 ```
 2. Create the scanner container:
 ```bash
-docker-compose -f docker-compose.yml -f add-scanner.yml up 
+docker-compose -f docker-compose.yml -f remote-scanner.yml up 
 ```
 3. Add the scanner to GVM:
 ```bash

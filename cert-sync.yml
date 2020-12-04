@@ -7,3 +7,5 @@ services:
     command: greenbone-certdata-sync --curl --verbose
     depends_on:
       - "gvmd"
+    networks:
+      - gvm-network

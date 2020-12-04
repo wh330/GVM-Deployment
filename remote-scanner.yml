@@ -21,6 +21,9 @@ services:
       - cacert.pem
     depends_on:
       - "gvmd"
+    networks:
+      - gvm-network
+
   # It is recommended to add vm.overcommit_memory=1 into
   # /etc/systcl.conf on the host
   remote-scanner-redis:
@@ -36,6 +39,8 @@ services:
       net.core.somaxconn: '2048'
     depends_on:
       - "remote-scanner"
+    networks:
+      - gvm-network
 
 volumes:
   remote-scanner-redis-data:

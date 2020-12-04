@@ -16,6 +16,12 @@ The project builds the following docker images:
 ## Development
 For testing and development, you can deploy the GVM components with `docker-compose`:
 
+Create the docker network `gvm-network`:
+```bash
+$ docker network create gvm-network -d bridge
+```
+
+Run `gvm-postgres`, `gvmd`, `gsad`, `openvas`, and `redis` services:
 ```bash
 docker-compose -f docker-compose.yml up
 ```

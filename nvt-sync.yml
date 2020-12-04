@@ -7,3 +7,5 @@ services:
     command: su - gvm -c "greenbone-nvt-sync"
     depends_on:
       - "gvmd"
+    networks:
+      - gvm-network

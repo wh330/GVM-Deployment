@@ -9,6 +9,8 @@ services:
       - POSTGRES_USER=gvmduser
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - gvm-network
 
   gvmd:
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gvmd
@@ -22,6 +24,8 @@ services:
       - ./certs:/usr/var/lib/gvm
     depends_on:
       - "gvm-postgres"
+    networks:
+      - gvm-network
 
   gsad:
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gsad
@@ -32,6 +36,8 @@ services:
       - GVMD_PORT=9390
     depends_on:
       - "gvmd"
+    networks:
+      - gvm-network
 
   # Default scanner connected through Unix domain socket.
   openvas:
@@ -47,6 +53,8 @@ services:
       - run-ospd:/var/run/ospd
     depends_on:
       - "gvm-postgres"
+    networks:
+      - gvm-network
 
   # It is recommended to add vm.overcommit_memory=1 into
   # /etc/systcl.conf on the host
@@ -63,6 +71,8 @@ services:
       net.core.somaxconn: '2048'
     depends_on:
       - "openvas"
+    networks:
+      - gvm-network
 
 volumes:
   redis-data:
@@ -71,3 +81,7 @@ volumes:
   run-redis:
   openvas-var-lib:
   run-ospd:
+
+networks:
+  gvm-network:
+    external: true

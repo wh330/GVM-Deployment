@@ -13,3 +13,5 @@ services:
       && gvm-manage-certs -c"
     depends_on:
       - "gvmd"
+    networks:
+      - gvm-network

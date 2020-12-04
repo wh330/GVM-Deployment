@@ -1,4 +1,4 @@
-version: '3.2'
+version: "3.3"
 services:
   cert-sync:
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gvmd

@@ -1,5 +1,5 @@
 # Create remote OpenVAS scanner
-version: '3.2'
+version: "3.3"
 services:
   remote-scanner:
     # CONNECTED /var/run/redis/redis.sock

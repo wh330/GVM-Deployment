@@ -14,12 +14,7 @@ The project builds the following docker images:
 - OpenVAS scanner version 7.0 built from https://github.com/greenbone/openvas.git.
 
 ## Development
-For testing and development, you can deploy the GVM components with `docker-compose`:
-
-Create the docker network `gvm-network`:
-```bash
-$ docker network create gvm-network -d bridge
-```
+For testing and development, you can deploy the GVM components with `docker-compose`.
 
 Run `gvm-postgres`, `gvmd`, `gsad`, `openvas`, and `redis` services:
 ```bash

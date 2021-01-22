@@ -34,31 +34,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: GMP_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.gmpClient.secretName }}
-                  key: username
-            - name: GMP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.gmpClient.secretName }}
-                  key: password
-            - name: GVM_HOST
-              value: {{ include "gvm.fullname" . }}-gvmd
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                - "/bin/sh"
-                - "-c"
-                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_PASSWORD tls --hostname $GVM_HOST create-scanner.gmp.py $MY_POD_NAME $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner /usr/var/lib/gvm 9391'"
-            preStop:
-              exec:
-                command:
-                - "/bin/sh"
-                - "-c"
-                - "su gvm -c 'gvm-script --gmp-username $GMP_USERNAME --gmp-password $GMP_PASSWORD tls --hostname $GVM_HOST delete-scanner.gmp.py $MY_POD_NAME.{{ include "gvm.fullname" . }}-remote-scanner'"
           command:
             - "sh"
             - "-c"

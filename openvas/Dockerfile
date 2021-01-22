@@ -86,7 +86,7 @@ RUN useradd -M -s /bin/bash gvm && \
     chown -R gvm:gvm /opt/gvm/var/run
 
 # copy dependencies for gvm-tools and scripts to add/remove the scanner
-COPY create-scanner.gmp.py delete-scanner.gmp.py requirements.txt ./
+COPY requirements.txt ./
 
 # install dependencies
 RUN pip3 install -r requirements.txt

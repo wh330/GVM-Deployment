@@ -1,0 +1,26 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: gvm-nvt-sync
+  labels:
+    app.kubernetes.io/instance: gvm-gvm
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: gvm
+              image: "registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/openvas:7"
+              imagePullPolicy: IfNotPresent
+              command: ["sh", "-c", "su gvm -c 'greenbone-nvt-sync'"]
+              volumeMounts:
+                - name: data-volume
+                  subPath: openvas
+                  mountPath: /opt/gvm/var/lib/openvas
+          volumes:
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: data-volume

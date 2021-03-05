@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: gvm-generate-certs
-  namespace: default
+  namespace: gvm
   labels:
     app.kubernetes.io/instance: gvm-gvm
 spec:

@@ -28,8 +28,11 @@ spec:
           image: "{{ tpl .Values.image.gvmd.registry . }}/{{ tpl .Values.image.gvmd.repository . }}:{{ tpl .Values.image.gvmd.tag . }}"
           imagePullPolicy: {{ .Values.image.gvmd.pullPolicy }}
           env:
-            - name: GVMD_POSTGRESQL_HOST
-              value: {{ .Release.Name }}-gvmd-db
+            - name: POSTGRESQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secretName }}
+                  key: host
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -41,7 +44,7 @@ spec:
                   name: {{ .Values.postgres.secretName }}
                   key: password
             - name: GVMD_POSTGRESQL_URI
-              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(GVMD_POSTGRESQL_HOST):5432/gvmd?application_name=gvmd"
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRESQL_HOST):5432/gvmd?application_name=gvmd"
           ports:
             - name: gvmd
               containerPort: 9390

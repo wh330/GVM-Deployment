@@ -181,10 +181,3 @@ persistence:
 
 postgres:
   secretName: gvm-postgres-secret
-  username: gvmduser
-  password: password
-
-gmpClient:
-  secretName: gvm-gmpclient-secret
-  username: admin
-  password: admin

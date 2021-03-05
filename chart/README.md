@@ -1,13 +1,4 @@
-# Helm chart for Greenbone Vulnerability Management (GVM)
-## Helm installation
-To install helm, follow the instructions in https://helm.sh/docs/intro/install/.
-
-The helm version used for this deployment:
-```bash
-$ helm version
-version.BuildInfo{Version:"v3.3.4", GitCommit:"a61ce5633af99708171414353ed49547cf05013d", GitTreeState:"clean", GoVersion:"go1.14.9"}
-```
-
+# GVM Helm chart
 ## Building chart from source
 To build the gvm helm chart from source:
 
@@ -17,17 +8,60 @@ helm package gvm
 ```
 This should leave you with a `gvm-*.tgz` file ready to be deployed in k8s cluster.
 
-## Installing GVM via helm chart
-A running Postgres database is required for the GVMd component. To deploy one for testing you can run the k8s deployment in [./postgres](./postgres). Note that a persistent volume claim should already be created, you can use the specification in [./volumes](./volumes).
+## Installing the helm chart
+There are manual steps required with the helm chart deployment:
+
+1. Create the GVM namespace. This will hold the GVM namespaced resources such as
+GVMd `Deployment` and remote scanner `Statefulset`.
 ```bash
-cd chart/gvm
-kubectl apply -f postgres
+kubectl create namespace gvm
 ```
 
-Install the chart:
+2. Create the k8s Persistent Volume (PV) and Persistent Volume Claims (PVC). These will
+store GVM config files, NVT, SCAP and Cert data. The dev and production PV and PVC spec
+is defined in [volumes](./volumes).
 
 ```bash
-helm install gvm ./gvm-*.tgz --namespace gvm --set postgres.password="password" --set gmpClient.password="password"
+kubectl apply -f volumes/dev/pvs.yaml -n gvm
+kubectl apply -f volumes/dev/pvcs.yaml -n gvm
+```
+
+3. Install `nfs-common` on k8s workers if not installed. This is needed for mounting the PV.
+You can do that manually or with
+[ansible ad-hoc](https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html)
+commands as follows.
+```bash
+ansible workers -m apt -a "name=nfs-common state=present" -i hosts -u your_user -become
+```
+
+4. The `gvm-gvmd` deployment will normally complain about inexistent
+`/var/lib/gvm/gvmd/gnupg`, to work around this, create the `gvmd/gnupg`
+directory under the `gvm` directory of the PV.
+
+5. Now you're ready to deploy the helm chart. Note that the username must be `gvmduser`
+as it is unfortunately hard-coded in `dbconfig` scripts.
+
+```bash
+helm install gvm ./gvm-*.tgz --set postgres.host=host --set postgres.username=gvmduser --set postgres.password=password
+```
+
+6. Manually deploy the k8s jobs and cronjobs and generate certificates for remote
+scanners. They are located under [jobs](./jobs). Please mind
+the namespace used in those spec files. It should be the same as the GVM deployment's namespace.
+```bash
+kubectl apply -f jobs/gen-certs.yaml
+kubectl apply -f jobs/nvt.yaml
+kubectl apply -f jobs/scap-cert-data.yaml
+```
+
+7. To run NVT and SCAP/Cert sync manually, make jobs out of the created cronjobs above
+as follows:
+```bash
+kubectl create job -n gvm --from=cronjob/gvm-nvt-sync gvm-nvt-sync-manual
+```
+After the NVT sync job completed, run
+```bash
+kubectl create job -n gvm --from=cronjob/gvm-scap-cert-data-sync gvm-scap-cert-data-sync-manual
 ```
 
 ## Configuration

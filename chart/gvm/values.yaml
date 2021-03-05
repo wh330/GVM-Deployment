@@ -77,10 +77,9 @@ openvasService:
   type: ClusterIP
   port: 9391
 
-# gsa service
-service:
-  type: NodePort
-  nodePort: 32535
+# gsad service
+gsadService:
+  type: ClusterIP
   port: 80
 
 ingress:

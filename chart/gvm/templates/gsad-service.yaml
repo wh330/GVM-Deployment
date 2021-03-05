@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gvm.fullname" . }}-gsad
+  namespace: {{ .Values.namespace.name }}
+  labels:
+  {{- $_ := set . "applicationNameSuffix" "gsad" }}
+  {{- include "gvm.labels" . | nindent 4 }}
+  {{- $_ := set . "applicationNameSuffix" "" }}
+  {{- if .Values.gsadService.annotations }}
+  annotations:
+    {{- toYaml .Values.gsadService.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.gsadService.type }}
+  {{- if and .Values.gsadService.clusterIP (eq .Values.gsadService.type "ClusterIP") }}
+  clusterIP: {{ .Values.gsadService.clusterIP }}
+  {{- end }}
+  ports:
+    - name: gsad
+      port: {{ .Values.gsadService.port }}
+      targetPort: gsad
+      protocol: TCP
+      {{- if (and (eq .Values.gsadService.type "NodePort") (not (empty .Values.gsadService.nodePort))) }}
+      nodePort: {{ .Values.gsadService.nodePort }}
+      {{- end }}
+  {{- if .Values.gsadService.externalIPs }}
+  externalIPs:
+    {{- toYaml .Values.gsadService.externalIPs | nindent 4 }}
+  {{- end }}
+  {{- if .Values.gsadService.loadBalancerIP }}
+  loadBalancerIP: "{{ .Values.gsadService.loadBalancerIP }}"
+  {{- end }}
+  {{- if .Values.gsadService.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml .Values.gsadService.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "gvm.name" . }}-gsad
+    app.kubernetes.io/instance: {{ include "gvm.instance" . }}

@@ -1,9 +1,9 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "gvm.fullname" . -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "gvm.fullname" . }}-gsad
   namespace: {{ .Values.namespace.name }}
   labels:
   {{- include "gvm.labels" . | nindent 4 }}
@@ -30,8 +30,8 @@ spec:
         {{- range .paths }}
           - path: {{ . }}
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
+              serviceName: {{ $fullName }}-gsad
+              servicePort: 80
         {{- end }}
   {{- end }}
 {{- end }}

@@ -51,17 +51,17 @@ spec:
             - name: remote-scanner
               containerPort: 9391
               protocol: TCP
-          livenessProbe:
-            tcpSocket:
-              port: remote-scanner
-            initialDelaySeconds: 120
-            periodSeconds: 80
-            failureThreshold: 5
-          readinessProbe:
-            tcpSocket:
-              port: remote-scanner
-            initialDelaySeconds: 60
-            periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: remote-scanner
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 20
+          #   failureThreshold: 5
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: remote-scanner
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 10
           resources:
             {{- toYaml .Values.resources.remoteScanner | nindent 12 }}
         - name: {{ .Chart.Name }}-redis

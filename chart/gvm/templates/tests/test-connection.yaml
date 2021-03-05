@@ -13,5 +13,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "gvm.fullname" . }}:{{ .Values.service.port }}']
+      args:  ['{{ include "gvm.fullname" . }}:{{ .Values.gsadService.port }}']
   restartPolicy: Never

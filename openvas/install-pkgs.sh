@@ -51,6 +51,7 @@ texlive-latex-extra
 xsltproc
 rsync
 sudo
+libunistring-dev
 EOF
 } | xargs apt-get install -yq --no-install-recommends
 

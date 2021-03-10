@@ -32,7 +32,7 @@ image:
   openvas:
     registry: "registry.gitlab.developers.cam.ac.uk"
     repository: uis/infra/gvm-deployment/openvas
-    tag: latest
+    tag: "7"
     pullPolicy: IfNotPresent
   redis:
     registry: "docker.io"

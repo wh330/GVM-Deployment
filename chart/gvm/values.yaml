@@ -21,17 +21,17 @@ namespace:
 image:
   gvmd:
     registry: "registry.gitlab.developers.cam.ac.uk"
-    repository: uis/infra/gvm-deployment/gvmd
+    repository: uis/infra/fps/gvm-deployment/gvmd
     tag: "9"
     pullPolicy: Always
   gsad:
     registry: "registry.gitlab.developers.cam.ac.uk"
-    repository: uis/infra/gvm-deployment/gsad
+    repository: uis/infra/fps/gvm-deployment/gsad
     tag: "9"
     pullPolicy: IfNotPresent
   openvas:
     registry: "registry.gitlab.developers.cam.ac.uk"
-    repository: uis/infra/gvm-deployment/openvas
+    repository: uis/infra/fps/gvm-deployment/openvas
     tag: "7"
     pullPolicy: IfNotPresent
   redis:

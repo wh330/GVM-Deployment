@@ -9,7 +9,7 @@ RUN set -ex; \
     apt update; \
     apt install -y --no-install-recommends gnupg; \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3C453D244AA450E0; \
-    echo "deb http://ppa.launchpad.net/mrazavi/gvm/ubuntu focal main" > /etc/apt/sources.list.d/mrazavi-ubuntu-gvm-focal.list; \
+    echo "deb http://ppa.launchpad.net/mrazavi/gvm/ubuntu bionic main" > /etc/apt/sources.list.d/mrazavi-ubuntu-gvm-focal.list; \
     apt update; \
     apt install -y --no-install-recommends gvmd-pg postgresql-client texlive-latex-base xsltproc gnutls-bin xmlstarlet zip python3 python3-lxml smbclient snmp gnupg openssh-client sshpass socat haveged rsync wget xml-twig-tools; \
     sed -i 's|/var/log/gvm/gvmd.log|/dev/stdout|g' /etc/gvm/gvmd_log.conf; \
@@ -19,8 +19,6 @@ RUN set -ex; \
     sed -i 's/if \[ "`id -u`" -eq "0" \]/if fasle \&\& [ "`id -u`" -eq "0" ]/' /usr/bin/greenbone-nvt-sync; \
     rm -rf ./openvas_*.deb; \
     rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /run/gvm
 
 ADD add-scanner.sh add-scanner-hostname.sh ./
 

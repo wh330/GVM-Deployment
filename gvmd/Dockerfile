@@ -20,6 +20,8 @@ RUN set -ex; \
     rm -rf ./openvas_*.deb; \
     rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /run/gvm
+
 ADD add-scanner.sh add-scanner-hostname.sh ./
 
 VOLUME /var/lib/gvm/

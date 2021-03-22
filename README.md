@@ -8,10 +8,10 @@ This project proposes and implements the following deployment of [Greenbone Vuln
 
 ## Docker images
 The project builds the following docker images:
-- Greenbone Vulnerability Manager version 9.0.1 built based on [admirito's GVM PPA](https://launchpad.net/~mrazavi/+archive/ubuntu/gvm).
+- Greenbone Vulnerability Manager versio built based on [admirito's GVM PPA](https://launchpad.net/~mrazavi/+archive/ubuntu/gvm).
 - PostgreSQL 12 Database with `libgvm-pg-server` built based on [admirito's GVM PPA](https://launchpad.net/~mrazavi/+archive/ubuntu/gvm)
-- Greenbone Security Assistant version 9.0 built from https://github.com/greenbone/gsa.git. 
-- OpenVAS scanner version 7.0 built from https://github.com/greenbone/openvas.git.
+- Greenbone Security Assistant built from https://github.com/greenbone/gsa.git. 
+- OpenVAS scanner built from https://github.com/greenbone/openvas.git.
 
 ## Development
 For testing and development, you can deploy the GVM components with `docker-compose`.

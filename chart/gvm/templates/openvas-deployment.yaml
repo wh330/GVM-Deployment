@@ -27,6 +27,10 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ tpl .Values.image.openvas.registry . }}/{{ tpl .Values.image.openvas.repository . }}:{{ tpl .Values.image.openvas.tag . }}"
           imagePullPolicy: {{ .Values.image.openvas.pullPolicy }}
+          command:
+            - "sh"
+            - "-c"
+            - "/tini -s -- bash /usr/local/bin/docker-entrypoint.sh ospd-openvas -l/dev/stdout -LINFO -f"
           volumeMounts:
             - name: run-dir
               mountPath: /var/run

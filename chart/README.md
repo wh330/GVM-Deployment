@@ -17,17 +17,16 @@ GVMd `Deployment` and remote scanner `Statefulset`.
 kubectl create namespace gvm
 ```
 
-2. Create self-signed TLS certificates for `fps-dev-gvm1.srv.uis.private.cam.ac.uk` GSAD
-service endpoint. The `CERT_NAME` above should be used in ingress TLS config in
+2. Create self-signed TLS certificates for the GSAD service endpoint and update
 [gvm/values](./gvm/values.yaml).
 
 ```bash
-KEY_FILE=fps-dev-gvm1.key
-CERT_FILE=fps-dev-gvm1.cert
-HOST=fps-dev-gvm1.srv.uis.private.cam.ac.uk
-CERT_NAME=fps-dev-gvm1-tls
-$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $KEY_FILE -out $CERT_FILE -subj "/CN=$HOST/O=$HOST"
-kubectl create secret tls $CERT_NAME --key $KEY_FILE --cert $CERT_FILE
+KEY_FILE=/tmp/host-example.key
+CERT_FILE=/tmp/host-example.cert
+HOST=host-example
+CERT_NAME=host-example-tls
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $KEY_FILE -out $CERT_FILE -subj "/CN=$HOST/O=$HOST"
+kubectl create secret tls $CERT_NAME --key $KEY_FILE --cert $CERT_FILE -n gvm
 ```
 
 3.  Create the k8s Persistent Volume (PV) and Persistent Volume Claims (PVC). These will
@@ -35,8 +34,7 @@ store GVM config files, NVT, SCAP and Cert data. The dev and production PV and P
 is defined in [volumes](./volumes).
 
 ```bash
-kubectl apply -f volumes/dev/pvs.yaml -n gvm
-kubectl apply -f volumes/dev/pvcs.yaml -n gvm
+kubectl apply -f volumes/dev-pvs.yaml
 ```
 
 4.  Install `nfs-common` on k8s workers if not installed. This is needed for mounting the PV.
@@ -47,28 +45,19 @@ commands as follows.
 ansible workers -m apt -a "name=nfs-common state=present" -i hosts -u your_user -become
 ```
 
-5. The `gvm-gvmd` deployment will normally complain about inexistent
-`/var/lib/gvm/gvmd/gnupg`, to work around this, create the `gvmd/gnupg`
-directory under the `gvm` directory of the PV.
-
-6. Now you're ready to deploy the helm chart. Note that the username must be `gvmduser`
+5. Now you're ready to deploy the helm chart. Note that the username must be `gvmduser`
 as it is unfortunately hard-coded in `dbconfig` scripts.
 
 ```bash
 helm install gvm ./gvm-*.tgz --set postgres.host=host --set postgres.username=gvmduser --set postgres.password=password
 ```
 
-7. Manually deploy the k8s jobs and cronjobs and generate certificates for remote
-scanners. They are located under [jobs](./jobs). Please mind
-the namespace used in those spec files. It should be the same as the GVM deployment's namespace.
+6. Manually generate certificates for remote.
 ```bash
 kubectl apply -f jobs/gen-certs.yaml
-kubectl apply -f jobs/nvt.yaml
-kubectl apply -f jobs/scap-cert-data.yaml
 ```
 
-8. To run NVT and SCAP/Cert sync manually, make jobs out of the created cronjobs above
-as follows:
+7. To run NVT and SCAP/Cert sync manually, make jobs out of the created cronjobs above:
 ```bash
 kubectl create job -n gvm --from=cronjob/gvm-nvt-sync gvm-nvt-sync-manual
 ```

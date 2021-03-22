@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-volume
+  namespace: gvm
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 3Gi
+  storageClassName: "gvm-data"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-volume
+  namespace: gvm
+spec:
+  capacity:
+    storage: 3Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: "gvm-data"
+  nfs:
+    path: /srv/nfs/fps
+    server: fps-dev-pv1.srv.uis.private.cam.ac.uk
+    readOnly: false

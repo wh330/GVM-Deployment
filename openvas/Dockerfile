@@ -5,10 +5,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin \
     PYTHONPATH=/opt/gvm/lib/python3.8/site-packages
 
-ENV gvm_libs_version="gvm-libs-11.0" \
-    ospd_version="ospd-2.0" \
-    ospd_openvas_version="ospd-openvas-1.0" \
-    openvas_version="openvas-7.0"
+ENV gvm_libs_version="v11.0.1" \
+    openvas_smb_version="v1.0.5" \
+    openvas_version="v7.0.1" \
+    ospd_version="v2.0.1" \
+    ospd_openvas_version="v1.0.1"
 
 COPY install-pkgs.sh /install-pkgs.sh
 
@@ -36,7 +37,7 @@ RUN cd /gvm-source && \
 # install smb module for the OpenVAS Scanner
 #   
 RUN cd /gvm-source && \
-    git clone https://github.com/greenbone/openvas-smb.git && \
+    git clone -b $openvas_smb_version https://github.com/greenbone/openvas-smb.git && \
     cd openvas-smb && \
     mkdir build && \
     cd build && \

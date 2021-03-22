@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   gvm-postgres:
-    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gvm-postgres
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/fps/gvm-deployment/gvm-postgres
     environment:
       - PGDATA=/var/lib/postgresql/data
       - POSTGRES_DB=gvmd
@@ -13,7 +13,7 @@ services:
       - gvm-network
 
   gvmd:
-    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gvmd
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/fps/gvm-deployment/gvmd
     environment:
       - GVMD_POSTGRESQL_URI=postgresql://gvmduser:mypassword@gvm-postgres:5432/gvmd?application_name=gvmd
     volumes:
@@ -28,7 +28,7 @@ services:
       - gvm-network
 
   gsad:
-    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/gsad
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/fps/gvm-deployment/gsad
     ports:
       - 8080:80
     environment:
@@ -43,7 +43,7 @@ services:
   openvas:
     # LISTENING /var/run/ospd/ospd.sock
     # CONNECTED /var/run/redis/redis.sock
-    image: registry.gitlab.developers.cam.ac.uk/uis/infra/gvm-deployment/openvas
+    image: registry.gitlab.developers.cam.ac.uk/uis/infra/fps/gvm-deployment/openvas
     privileged: true
     sysctls:
       net.core.somaxconn: '2048'
@@ -81,7 +81,9 @@ volumes:
   run-redis:
   openvas-var-lib:
   run-ospd:
+  certs:
 
 networks:
   gvm-network:
+    # external: true
     name: gvm-network

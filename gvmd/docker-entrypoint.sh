@@ -9,9 +9,6 @@ fi
 if [ "$1" = 'gvmd' ]; then
     gvm-manage-certs -q -a &> /dev/nul || true
 
-	# Create directory for scanners certs
-	mkdir -p /usr/var/lib/gvm
-
     if [ -z "${SKIP_WAIT_DB}" ]; then
 	echo "waiting for the database..."
 	while ! psql -q "${GVMD_POSTGRESQL_URI}" < /dev/null &> /dev/nul; do

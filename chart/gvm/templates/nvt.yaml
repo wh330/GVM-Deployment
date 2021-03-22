@@ -1,0 +1,35 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "gvm.fullname" . }}-nvt-sync
+  namespace: {{ .Values.namespace.name }}
+  labels:
+  {{- $_ := set . "applicationNameSuffix" "nvt-sync" }}
+  {{- include "gvm.labels" . | nindent 4 }}
+  {{- $_ := set . "applicationNameSuffix" "" }}
+spec:
+  schedule: "0 0 * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: {{ .Chart.Name }}
+              image: "{{ tpl .Values.image.openvas.registry . }}/{{ tpl .Values.image.openvas.repository . }}:{{ tpl .Values.image.openvas.tag . }}"
+              imagePullPolicy: {{ .Values.image.openvas.pullPolicy }}
+              command: ["sh", "-c", "su gvm -c 'greenbone-nvt-sync'"]
+              volumeMounts:
+                - name: data-volume
+                  subPath: openvas
+                  mountPath: /opt/gvm/var/lib/openvas
+          volumes:
+            - name: data-volume
+              {{- if .Values.persistence.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ tpl .Values.persistence.existingClaim . | default (include "gvm.fullname" .) }}
+              {{- else }}
+              emptyDir: {}
+              {{- end }}

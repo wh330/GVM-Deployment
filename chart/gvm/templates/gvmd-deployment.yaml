@@ -66,8 +66,8 @@ spec:
             - name: ospd-socket-dir
               mountPath: /var/run/ospd
             - name: data-volume
-              subPath: openvas
-              mountPath: /var/lib/openvas
+              subPath: openvas/plugins
+              mountPath: /var/lib/openvas/plugins
             - name: data-volume
               subPath: gvm
               mountPath: /var/lib/gvm
@@ -80,6 +80,11 @@ spec:
             - name: data-volume
               subPath: certs
               mountPath: /usr/var/lib/gvm
+            - name: data-volume
+              subPath: gvm/gvmd
+              mountPath: /var/lib/gvm/gvmd
+            # - name: gvmd-log-config
+            #   mountPath: /etc/gvm
           resources:
             {{- toYaml .Values.resources.gvmd | nindent 12 }}
         - name: {{ .Chart.Name }}-openvas-connector
@@ -105,6 +110,12 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        - name: gvmd-log-config
+          configMap:
+            name: {{ include "gvm.fullname" . }}-gvmd-log-config
+            items:
+            - key: gvmd-log-config
+              path: gvmd_log.conf
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

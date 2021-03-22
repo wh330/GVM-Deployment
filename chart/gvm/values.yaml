@@ -22,17 +22,17 @@ image:
   gvmd:
     registry: "registry.gitlab.developers.cam.ac.uk"
     repository: uis/infra/fps/gvm-deployment/gvmd
-    tag: "9"
+    tag: "9.0.0"
     pullPolicy: Always
   gsad:
     registry: "registry.gitlab.developers.cam.ac.uk"
     repository: uis/infra/fps/gvm-deployment/gsad
-    tag: "9"
+    tag: "9.0.1"
     pullPolicy: IfNotPresent
   openvas:
     registry: "registry.gitlab.developers.cam.ac.uk"
     repository: uis/infra/fps/gvm-deployment/openvas
-    tag: "7"
+    tag: "7.0.1"
     pullPolicy: IfNotPresent
   redis:
     registry: "docker.io"

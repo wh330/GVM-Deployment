@@ -4,7 +4,8 @@ services:
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/fps/gvm-deployment/gvmd
     volumes:
       - gvm-var-lib:/var/lib/gvm
-    command: greenbone-certdata-sync --curl --verbose
+      - run-gvm:/run/gvm
+    command: greenbone-feed-sync --type CERT
     depends_on:
       - "gvmd"
     networks:

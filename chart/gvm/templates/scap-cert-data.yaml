@@ -10,7 +10,7 @@ metadata:
 spec:
   schedule: "0 1 * * *"
   successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -29,8 +29,10 @@ spec:
               #     value: rsync://feed.community.greenbone.net:/scap-data
               #   - name: COMMUNITY_CERT_RSYNC_FEED
               #     value: rsync://feed.community.greenbone.net:/cert-data
-              command: ["sh", "-c", "greenbone-certdata-sync; sleep 3; greenbone-scapdata-sync; true"]
+              command: ["sh", "-c", "greenbone-feed-sync --type CERT; sleep 3; greenbone-feed-sync --type SCAP; true"]
               volumeMounts:
+                - name: run-gvm
+                  mountPath: /run/gvm
                 - name: data-volume
                   subPath: scap-data
                   mountPath: /var/lib/gvm/scap-data
@@ -38,6 +40,8 @@ spec:
                   subPath: cert-data
                   mountPath: /var/lib/gvm/cert-data
           volumes:
+            - name: run-gvm
+              emptyDir: {}
             - name: data-volume
               {{- if .Values.persistence.enabled }}
               persistentVolumeClaim:

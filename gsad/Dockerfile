@@ -4,8 +4,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH \
     PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin
 
-ENV gvm_libs_version="v11.0.1" \
-    gsa_version="v9.0.1"
+ENV gvm_libs_version="v20.8.1" \
+    gsa_version="v20.8.1"
 
 ENV GVMD_HOST="gvmd" \
     GVMD_PORT="9390"

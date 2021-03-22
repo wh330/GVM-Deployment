@@ -4,7 +4,7 @@ services:
     image: registry.gitlab.developers.cam.ac.uk/uis/infra/fps/gvm-deployment/gvmd
     volumes:
       - gvm-var-lib:/var/lib/gvm
-    command: greenbone-scapdata-sync --curl --verbose
+    command: greenbone-feed-sync --type SCAP
     depends_on:
       - "gvmd"
     networks:

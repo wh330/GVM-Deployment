@@ -1,32 +1,36 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "gvm.fullname" . }}-nvt-sync
+  name: {{ include "gvm.fullname" . }}-gvmd-data-sync
   namespace: {{ .Values.namespace.name }}
   labels:
-  {{- $_ := set . "applicationNameSuffix" "nvt-sync" }}
+  {{- $_ := set . "applicationNameSuffix" "gvmd-data-sync" }}
   {{- include "gvm.labels" . | nindent 4 }}
   {{- $_ := set . "applicationNameSuffix" "" }}
 spec:
-  schedule: "0 0 * * *"
+  schedule: "0 2 * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: {{ include "gvm.name" . }}-gvmd-data-sync
+            app.kubernetes.io/instance: {{ include "gvm.instance" . }}
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: {{ .Chart.Name }}
-              image: "{{ tpl .Values.image.openvas.registry . }}/{{ tpl .Values.image.openvas.repository . }}:{{ tpl .Values.image.openvas.tag . }}"
-              imagePullPolicy: {{ .Values.image.openvas.pullPolicy }}
-              command: ["sh", "-c", "su gvm -c 'greenbone-nvt-sync'"]
+              image: "{{ tpl .Values.image.gvmd.registry . }}/{{ tpl .Values.image.gvmd.repository . }}:{{ tpl .Values.image.gvmd.tag . }}"
+              imagePullPolicy: {{ .Values.image.gvmd.pullPolicy }}
+              command: ["sh", "-c", "greenbone-feed-sync --type GVMD_DATA"]
               volumeMounts:
                 - name: run-gvm
                   mountPath: /run/gvm
                 - name: data-volume
-                  subPath: openvas
-                  mountPath: /opt/gvm/var/lib/openvas
+                  subPath: data-objects
+                  mountPath: /var/lib/gvm/data-objects
           volumes:
             - name: run-gvm
               emptyDir: {}

@@ -57,7 +57,7 @@ helm install gvm ./gvm-*.tgz --set postgres.host=host --set postgres.username=gv
 kubectl apply -f jobs/gen-certs.yaml
 ```
 
-7. To run NVT and SCAP/Cert sync manually, make jobs out of the created cronjobs above:
+7. To run NVT, GVMD data, and SCAP/Cert sync manually, make jobs out of the chart cronjobs:
 ```bash
 kubectl create job -n gvm --from=cronjob/gvm-nvt-sync gvm-nvt-sync-manual
 ```
@@ -65,22 +65,22 @@ After the NVT sync job completed, run
 ```bash
 kubectl create job -n gvm --from=cronjob/gvm-scap-cert-data-sync gvm-scap-cert-data-sync-manual
 ```
+Then,
+After the NVT sync job completed, run
+```bash
+kubectl create job -n gvm --from=cronjob/gvm-gvmd-data-sync gvm-gvmd-data-sync-manual
+```
 
 ## Configuration
 The following table lists some of the useful configurable parameters of the GVM chart and their default values. For a complete list see [values.yaml](./gvm/values.yaml) file.
 
-| Parameter                                 | Description                                                  | Default |
-|-------------------------------------------|--------------------------------------------------------------|---------|
-| image.gvmd.tag                            | the docker tag for gvmd image                                | 10      |
-| image.gsad.tag                            | the docker tag for gsad image                                | 10      |
-| image.openvas.tag                         | the docker tag for openvas image                             | 10      |
-| gvmd-db.image.tag                         | the docker tag for gvm-postgres image                        | 10      |
-| syncNvtPluginsAfterInstall                | run a nvt-sync job on post-installation                      | true    |
-| syncScapCertDataAfterInstall              | run scapdata-sync and certdata-sync on post-installation     | false   |
-| persistence.existingClaim                 | name of an existing pvc for data (nvt/scap/cert) persistence | ""      |
-| gvmd-db.postgresqlPassword                | the password for "gvmduser" in "gvmd" postgresql database    | ""      |
-| gvmd-db.persistence.existingClaim         | name of an existing pvc for postgresql data persistence      | ""      |
-| openvas-redis.persistence.existingClaim | name of an existing pvc for redis data persistence           | ""      |
+| Parameter                                 | Description                                                       | Default |
+|-------------------------------------------|-------------------------------------------------------------------|---------|
+| image.gvmd.tag                            | the docker tag for gvmd image                                     | 20.8.1    |
+| image.gsad.tag                            | the docker tag for gsad image                                     | 20.8.1    |
+| image.openvas.tag                         | the docker tag for openvas image                                  | 20.8.1    |
+| gvm-postgres.image.tag                    | the docker tag for gvm-postgres image                             | 12    |
+| persistence.existingClaim                 | name of an existing pvc for data (nvt/scap/cert) persistence      | "data-volume"      |
 
 ## To-do
 - Update [Configuration](#configuration).

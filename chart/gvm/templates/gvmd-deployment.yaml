@@ -62,12 +62,16 @@ spec:
             periodSeconds: 10
           volumeMounts:
             - name: run-dir
-              mountPath: /var/run
-            - name: ospd-socket-dir
-              mountPath: /var/run/ospd
+              mountPath: /run
+            - name: run-dir
+              subPath: gvm
+              mountPath: /run/gvm
+            - name: run-dir
+              subPath: ospd
+              mountPath: /run/ospd
             - name: data-volume
-              subPath: openvas/plugins
-              mountPath: /var/lib/openvas/plugins
+              subPath: openvas
+              mountPath: /var/lib/openvas
             - name: data-volume
               subPath: gvm
               mountPath: /var/lib/gvm
@@ -83,6 +87,9 @@ spec:
             - name: data-volume
               subPath: gvm/gvmd
               mountPath: /var/lib/gvm/gvmd
+            - name: data-volume
+              subPath: data-objects
+              mountPath: /var/lib/gvm/data-objects
             # - name: gvmd-log-config
             #   mountPath: /etc/gvm
           resources:
@@ -90,18 +97,17 @@ spec:
         - name: {{ .Chart.Name }}-openvas-connector
           image: "{{ tpl .Values.image.socat.registry . }}/{{ tpl .Values.image.socat.repository . }}:{{ tpl .Values.image.socat.tag . }}"
           imagePullPolicy: {{ .Values.image.socat.pullPolicy }}
-          args: ["-d", "-d", "UNIX-LISTEN:/var/run/ospd/ospd.sock,fork", "TCP4-CONNECT:{{ include "gvm.fullname" . }}-openvas:9391"]
+          args: ["-d", "-d", "UNIX-LISTEN:/run/ospd/ospd.sock,fork", "TCP4-CONNECT:{{ include "gvm.fullname" . }}-openvas:9391"]
           volumeMounts:
             - name: run-dir
-              mountPath: /var/run
-            - name: ospd-socket-dir
-              mountPath: /var/run/ospd
+              mountPath: /run
+            - name: run-dir
+              subPath: ospd
+              mountPath: /run/ospd
           resources:
             {{- toYaml .Values.resources.gvmdOpenvasConnector | nindent 12 }}
       volumes:
         - name: run-dir
-          emptyDir: {}
-        - name: ospd-socket-dir
           emptyDir: {}
         - name: data-volume
           {{- if .Values.persistence.enabled }}

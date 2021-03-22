@@ -39,8 +39,11 @@ spec:
             - "-c"
             - "/tini -s -- bash /usr/local/bin/docker-entrypoint.sh ospd-openvas -l/dev/stdout -LINFO -p 9391 -b $MY_POD_NAME -k /usr/var/lib/gvm/key.pem -c /usr/var/lib/gvm/cert.pem --ca-file /usr/var/lib/gvm/cacert.pem -f"
           volumeMounts:
-            - name: redis-socket-dir
-              mountPath: /var/run/redis
+            - name: run-dir
+              mountPath: /run
+            - name: run-dir
+              subPath: redis
+              mountPath: /run/redis
             - name: data-volume
               subPath: openvas
               mountPath: /opt/gvm/var/lib/openvas
@@ -76,8 +79,11 @@ spec:
             - redis-server
             - "/redis-master/redis.conf"
           volumeMounts:
-            - name: redis-socket-dir
-              mountPath: /var/run/redis
+            - name: run-dir
+              mountPath: /run
+            - name: run-dir
+              subPath: redis
+              mountPath: /run/redis
             - name: data-volume
               mountPath: /data
               subPathExpr: redis/$(MY_POD_NAME)
@@ -86,7 +92,7 @@ spec:
           resources:
             {{- toYaml .Values.resources.openvasRedis | nindent 12 }}
       volumes:
-        - name: redis-socket-dir
+        - name: run-dir
           emptyDir: {}
         - name: config
           configMap:

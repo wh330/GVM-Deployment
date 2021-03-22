@@ -33,9 +33,10 @@ spec:
             - "/tini -s -- bash /usr/local/bin/docker-entrypoint.sh ospd-openvas -l/dev/stdout -LINFO -f"
           volumeMounts:
             - name: run-dir
-              mountPath: /var/run
-            - name: redis-socket-dir
-              mountPath: /var/run/redis
+              mountPath: /run
+            - name: run-dir
+              subPath: redis
+              mountPath: /run/redis
             - name: data-volume
               subPath: openvas
               mountPath: /opt/gvm/var/lib/openvas
@@ -44,7 +45,7 @@ spec:
         - name: {{ .Chart.Name }}-openvas-listener
           image: "{{ tpl .Values.image.socat.registry . }}/{{ tpl .Values.image.socat.repository . }}:{{ tpl .Values.image.socat.tag . }}"
           imagePullPolicy: {{ .Values.image.socat.pullPolicy }}
-          args: ["-d", "-d", "TCP4-LISTEN:9391,fork", "UNIX-CONNECT:/var/run/ospd/ospd.sock"]
+          args: ["-d", "-d", "TCP4-LISTEN:9391,fork", "UNIX-CONNECT:/run/ospd/ospd.sock"]
           ports:
             - name: openvas
               containerPort: 9391
@@ -62,7 +63,10 @@ spec:
             periodSeconds: 10
           volumeMounts:
             - name: run-dir
-              mountPath: /var/run
+              mountPath: /run
+            - name: run-dir
+              subPath: redis
+              mountPath: /run/redis
           resources:
             {{- toYaml .Values.resources.openvasListener | nindent 12 }}
         - name: {{ .Chart.Name }}-redis
@@ -72,8 +76,11 @@ spec:
             - redis-server
             - "/redis-master/redis.conf"
           volumeMounts:
-            - name: redis-socket-dir
-              mountPath: /var/run/redis
+            - name: run-dir
+              mountPath: /run
+            - name: run-dir
+              subPath: redis
+              mountPath: /run/redis
             - name: data-volume
               mountPath: /data
               subPath: redis/gvm-openvas
@@ -83,8 +90,6 @@ spec:
             {{- toYaml .Values.resources.openvasRedis | nindent 12 }}
       volumes:
         - name: run-dir
-          emptyDir: {}
-        - name: redis-socket-dir
           emptyDir: {}
         - name: config
           configMap:

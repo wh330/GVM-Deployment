@@ -5,11 +5,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin \
     PYTHONPATH=/opt/gvm/lib/python3.8/site-packages
 
-ENV gvm_libs_version="v11.0.1" \
+ENV gvm_libs_version="v20.8.1" \
     openvas_smb_version="v1.0.5" \
-    openvas_version="v7.0.1" \
-    ospd_version="v2.0.1" \
-    ospd_openvas_version="v1.0.1"
+    openvas_version="v20.8.1" \
+    ospd_version="v20.8.1" \
+    ospd_openvas_version="v20.8.1"
 
 COPY install-pkgs.sh /install-pkgs.sh
 
@@ -98,7 +98,7 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
 VOLUME /var/lib/openvas \
-       /var/run/redis
+       /run/redis
 
 COPY docker-entrypoint.sh /usr/local/bin/
 

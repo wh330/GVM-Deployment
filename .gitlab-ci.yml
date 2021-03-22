@@ -35,14 +35,14 @@ gvmd:
   variables:
     IMAGE_TYPE: gvmd
     IMAGE_NAME: gvmd
-    TAGS: 9.0.0
+    TAGS: 20.8.1 latest
 
 gsad:
   extends: .build_and_push
   variables:
     IMAGE_TYPE: gsad
     IMAGE_NAME: gsad
-    TAGS: 9.0.1
+    TAGS: 20.8.1 latest
 
 gvm-postgres:
   extends: .build_and_push
@@ -56,7 +56,7 @@ openvas:
   variables:
     IMAGE_TYPE: openvas
     IMAGE_NAME: openvas
-    TAGS: 7.0.1
+    TAGS: 20.8.1 latest
 
 # build and push functions used by jobs
 .functions: &functions |

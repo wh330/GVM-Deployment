@@ -52,7 +52,7 @@ as it is unfortunately hard-coded in `dbconfig` scripts.
 helm install gvm ./gvm-*.tgz --set postgres.host=host --set postgres.username=gvmduser --set postgres.password=password
 ```
 
-6. Manually generate certificates for remote.
+6. Manually generate certificates for remote scanners.
 ```bash
 kubectl apply -f jobs/gen-certs.yaml
 ```
@@ -82,7 +82,3 @@ The following table lists some of the useful configurable parameters of the GVM 
 | gvm-postgres.image.tag                    | the docker tag for gvm-postgres image                             | 12    |
 | persistence.existingClaim                 | name of an existing pvc for data (nvt/scap/cert) persistence      | "data-volume"      |
 
-## To-do
-- Update [Configuration](#configuration).
-- Create Cronjobs for the jobs in [./jobs](./jobs).
-- Add GMP client deployment.

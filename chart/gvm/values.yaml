@@ -79,13 +79,13 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /
 
   hosts:
-  - host: fps-dev-gvm1.srv.uis.private.cam.ac.uk
+  - host: fps-dev-gvm1
     paths: [/]
   
   tls:
    - secretName: fps-dev-gvm1-tls
      hosts:
-       - fps-dev-gvm1.srv.uis.private.cam.ac.uk
+       - fps-dev-gvm1
 
 resources:
   gvmd:

@@ -29,5 +29,5 @@ spec:
   storageClassName: "gvm-data"
   nfs:
     path: /srv/nfs/fps
-    server: fps-dev-pv1.srv.uis.private.cam.ac.uk
+    server: fps-dev-pv1
     readOnly: false
